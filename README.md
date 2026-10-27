@@ -29,7 +29,7 @@ What these numbers do **not** show: whether real families enjoyed the day. They 
 
 ## Try it
 
-1. Open the demo and press **Grandma & grandkid · Seoul** (or type your own two people).
+1. Open the demo and press **Grandma & grandkid · Seoul** (Grandma: Lim Young-woong and the drama *Reply 1988*; the kid: Minecraft and Pokémon), or type your own two people.
 2. Watch the agent work: each Qloo comparison and each decision streams in.
 3. Read the plan. Each card shows:
    - **Grandma: #3 · Me: #7**: where the pick sits in each person's own Qloo list.
@@ -58,7 +58,8 @@ favourites ──/search──▶ Qloo entities (+ their tags)
 - `compare(part, genre_a?, genre_b?, lunch_filter?)`: each person's own list for that part of the day (`/v2/insights` with `filter.location.query`, place category tags, `filter.hours=Saturday`, `signal.demographics.age`, `filter.content_rating` for a child or teenager, bars excluded with anyone under 18), a pool of at most 50 candidates (items in both lists first), every candidate scored for each person with `filter.results.entities` and placed inside that person's own list, the mixed-call pick for comparison, and **checks**:
   - *genre*: the favourite's Qloo genre (artist tags, or a category such as "Trot Singers" resolved with `/v2/tags`) is tested against the person's own top 10 with `filter.tags` + `filter.results.entities` in one call. 2 or fewer of 10 → re-plan within that genre.
   - *kids' lunch*: with a child, lunch is restaurants Qloo tags **good for kids** (tag intersection) with every alcohol tag excluded (alcohol, beer, wine, cocktails, hard liquor, full bar, happy-hour drinks …). Fewer than 20 → widen to "no alcohol tags".
-  - *no overlap*: nothing in both lists → take turns.
+  - *songs with a child*: Qloo has no lyric rating for artists, so with a child along the youngest person's artists come only from those Qloo tags family-friendly (fewer than 3 → their own list, and the plan says so).
+  - *no overlap*: nothing in both lists → take turns (two each for songs).
 - `find_genre_tag(word)`: `/v2/tags` search for a music genre.
 - `choose(part, picks[{ref, kind, why}])`: picks by short reference from the latest comparison. Rejected if the reference is unknown, a "shared" pick is not in both lists, a turn is not from that person's top 20, or the item is already used elsewhere in the day.
 - `finish(summary)`.
@@ -111,7 +112,8 @@ The keys stay on the server: the browser only talks to `/api/plan`, and the call
 
 ## Limits
 
-- Qloo knows some places and people better than others. Korean place names come back in Korean (the card adds Qloo's English description).
+- Qloo knows some places and people better than others. Korean names come back in Korean; the card adds Qloo's own Latin-script alias when it has one, and Qloo's English description.
+- The example pair's second favourite (*Reply 1988*) was chosen by us after trying three, because its film pick (*Coco*) reads best. With Lim Young-woong alone the shared film was a World War I dog film (docs/loop_log.md, loop 2).
 - "Shared" means "in both people's Qloo top 100 (places) or top 200 (films, artists, shows)". It is a statement about Qloo's lists, not a promise that anyone will like it.
 - A genre re-plan narrows that person's list to the genre (Qloo returned only 10 trot-tagged artists for Grandma), so music usually becomes taking turns. That is the honest answer.
 - "No alcohol tag" means Qloo lists none; a place can still serve alcohol. Paris with a child ends at McDonald's: that is what the tags allow.

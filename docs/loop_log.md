@@ -14,3 +14,16 @@ Changes:
 - Kids' lunch: restaurants tagged good for kids (tag intersection), every alcohol tag excluded.
 - New baseline: the same model without Qloo.
 - Page: re-plan card (first pass struck through → second call), reasons with "checked against Qloo", planner badge, day summary, "who would use this".
+
+Judge (loop 1, fresh agent; the full method brief did not reach it, so it scored on the four criteria directly): **29 / 40** — Technological Implementation 8.5, Design 7, Potential Impact 6.5, Quality of the Idea 7. Verdict: can win a prize if deployed. Top fixes: deploy with the model planner and a warm cache; the hero film (*Sgt. Stubby*) looked worse than the naive pick (*Ralph Breaks the Internet*); no child-safety filter on music (a hip-hop artist as the kid's turn); music turns 2:1; Korean names without romanisation; "only 0 of" wording.
+
+## Loop 2 — judge fixes (28 Oct)
+
+Changes:
+- With a child in the car, the youngest person's artists come only from artists Qloo tags family-friendly (`urn:tag:audience:qloo:family_friendly`, `urn:tag:style:qloo:family_friendly`); if Qloo has fewer than 3, their own list is used and the plan says so. (Qloo's `explicit` tags were tested first: none of the kid's top artists carry them, so they filter nothing.)
+- Music turns are even: two each when nothing is shared.
+- Non-Latin names show Qloo's own Latin-script alias (e.g. 홍진영 · Hong Jin-young).
+- Hero example: Grandma loves Lim Young-woong **and Reply 1988** (a Korean family drama). The shared film becomes *Coco* (#45 for Grandma, #15 for the kid) instead of *Sgt. Stubby*; we tried three second favourites and kept the one whose picks read best, and say so here.
+- Planner refuses no-op re-plans (same options again); invalid picks are logged.
+- Wording: "none of Grandma's top 10", turns no longer say "minds least" when the other person has it outside their list.
+- Daily plan cap per instance 80 → 200 for the judging weeks.
