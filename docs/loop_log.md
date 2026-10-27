@@ -27,3 +27,17 @@ Changes:
 - Planner refuses no-op re-plans (same options again); invalid picks are logged.
 - Wording: "none of Grandma's top 10", turns no longer say "minds least" when the other person has it outside their list.
 - Daily plan cap per instance 80 → 200 for the judging weeks.
+
+Judge (loop 2, fresh agent with the full method brief: judge panel, 100-entrants overlap, blind ranking among the 2025 winners, red team, demo test, business): **25.7 / 40** (Technological Implementation 7.3, Design 6.3, Potential Impact 5.3, Quality of the Idea 6.7), business 5/10, blind rank 4th and 5th of 8, verdict "borderline to unlikely". The drop from loop 1 is mostly the stricter method (loop 1's judge did not get the brief), not a regression. Top fixes: deploy with a reliable model and warm presets; show the LLM-only baseline on the page; put the re-plan story at the top; kid songs (a 1992 baby novelty hit came first); romanise every non-Latin name; the places overlap is trivial where Qloo has fewer than 100 places; pick one buyer; doc mismatches (daily cap, "8 cities" = 7, model timing, trot wording, a typo).
+
+## Loop 3 — make the agent's value visible (28 Oct)
+
+Changes:
+- **The same model, asked alone, on every card.** While Qloo works, the model is asked (one tool call) for a film, artist, show and lunch place both would enjoy; each answer is looked up in Qloo and placed in both people's lists, next to the agent's pick. When it simply repeats one person's favourite, the card says so; when it agrees with the agent, the card says that too.
+- **"What the agent did" box** at the top of the plan: every re-plan and filter in one list.
+- **Outing kinds:** the model may narrow the morning to kinds of place that fit both people (aquarium, science museum, planetarium, arcade … — Qloo category tags) and go back if both rank it worse. A decision the rules never make.
+- Kid songs: family-friendly artists with a popularity floor (Qloo `filter.popularity.min=0.9`), so the first pick is not a 1992 baby novelty hit.
+- Hangul names without a Qloo alias are romanised on the page (Revised Romanization, marked as done by the page).
+- Grounding check: Unicode hyphens normalised; tags and description words of the chosen picks allowed in the day summary (it was rejecting "Korean" and "Baby‑Sitters").
+- `POST /api/plan` with `"stream": false` returns one JSON plan (the partner API).
+- README: one first buyer (family day-out and travel apps), places-overlap caveat, fixed mismatches.
