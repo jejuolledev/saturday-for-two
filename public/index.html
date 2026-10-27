@@ -71,7 +71,13 @@
         <label>City for the outing and lunch
           <input name="city" value="Seoul" maxlength="60" placeholder="e.g. Seoul, New York, London">
         </label>
-        <label class="check"><input type="checkbox" name="kidSafe" checked> A child is coming (films and shows rated G / PG)</label>
+        <label class="who">Who is coming along?
+          <select name="audience">
+            <option value="child" selected>A child (films and shows G / PG, no bars)</option>
+            <option value="teen">A teenager (up to PG-13 / TV-14, no bars)</option>
+            <option value="adults">Adults only</option>
+          </select>
+        </label>
         <button type="submit" id="go">Plan our Saturday</button>
       </div>
     </form>
@@ -103,9 +109,9 @@
       <h2>How it works</h2>
       <ol>
         <li><b>Find each favourite in Qloo.</b> Each name goes to <code>/search</code>. If the first match has no taste data, the agent tries the next one and tells you.</li>
-        <li><b>Get each person's own list</b> for every part of the day with <code>/v2/insights</code>, using their age band if given: top 100 places in your city that are open on Saturday, top 200 films, artists and shows.</li>
+        <li><b>Get each person's own list</b> for every part of the day with <code>/v2/insights</code>, using their age band if given: top 100 places in your city that are open on Saturday (no bars if someone under 18 is coming), top 200 films, artists and shows (rated for who is coming).</li>
         <li><b>Find where the lists meet.</b> A pick is only called shared if it is in <b>both</b> people's own lists, and the agent prefers the one whose <i>worse</i> rank is best. Each candidate is scored for each person with <code>filter.results.entities</code>. Mixing everyone's likes into one call is not enough: one person's taste usually drowns out the other, and the plan shows you what that call would have picked.</li>
-        <li><b>Explain it.</b> <code>feature.explainability</code> shows how much each favourite pulled a pick in, and Qloo tags say what it is.</li>
+        <li><b>Show the evidence.</b> Every pick shows its rank in each person's own list, Qloo's English description and its Qloo tags. The full log of Qloo calls is one click away.</li>
         <li><b>Be honest.</b> If nothing is in both lists, the plan says so and you take turns: from each person's top 10, the pick the other person minds least.</li>
       </ol>
       <p class="fine">No language model writes this plan, so it cannot invent a place or a film: every pick is a Qloo entity. Results describe what people with similar tastes tend to like; they are not a promise about any one person.</p>

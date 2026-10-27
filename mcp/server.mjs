@@ -18,7 +18,7 @@ const TOOL = {
       b_likes: { type: 'array', items: { type: 'string' }, minItems: 1, maxItems: 3 },
       b_age: { type: 'string', enum: AGE_BANDS },
       city: { type: 'string', description: 'City for the outing and lunch, e.g. Seoul' },
-      kid_safe: { type: 'boolean', description: 'Limit films and shows to G / PG ratings' },
+      audience: { type: 'string', enum: ['child', 'teen', 'adults'], description: 'child = films/shows G or PG and no bars; teen = up to PG-13 / TV-14 and no bars; adults = no limits' },
     },
     required: ['a_likes', 'b_likes'],
   },
@@ -54,7 +54,7 @@ rl.on('line', async (line) => {
     if (method === 'tools/call') {
       if (params?.name !== TOOL.name) return send({ jsonrpc: '2.0', id, error: { code: -32602, message: 'Unknown tool' } });
       const x = params.arguments || {};
-      const input = normalizeRequest({ a: { label: x.a_label, likes: x.a_likes, age: x.a_age }, b: { label: x.b_label, likes: x.b_likes, age: x.b_age }, city: x.city, kidSafe: x.kid_safe });
+      const input = normalizeRequest({ a: { label: x.a_label, likes: x.a_likes, age: x.a_age }, b: { label: x.b_label, likes: x.b_likes, age: x.b_age }, city: x.city, audience: x.audience });
       if (input.errors.length) return send({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: input.errors.join(' ') }], isError: true } });
       const plan = await planSaturday(createQloo(), input);
       const { calls, ...compact } = plan;

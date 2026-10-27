@@ -90,3 +90,11 @@ test('englishShort prefers the English description', () => {
   assert.equal(englishShort({ short_description: 'Lake' }), 'Lake');
   assert.equal(englishShort({}), '');
 });
+
+test('normalizeRequest: audience levels and old kidSafe flag', () => {
+  const base = { a: { likes: ['x'] }, b: { likes: ['y'] } };
+  assert.equal(normalizeRequest({ ...base, audience: 'teen' }).audience, 'teen');
+  assert.equal(normalizeRequest({ ...base, kidSafe: true }).audience, 'child');
+  assert.equal(normalizeRequest({ ...base }).audience, 'adults');
+  assert.equal(normalizeRequest({ ...base, audience: 'nope' }).audience, 'adults');
+});

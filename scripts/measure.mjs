@@ -7,14 +7,14 @@ import { createQloo } from '../lib/qloo.mjs';
 import { planSaturday, normalizeRequest } from '../lib/agent.mjs';
 
 const PAIRS = [
-  { a: { label: 'Grandma', likes: ['Lim Young-woong'], age: '55_and_older' }, b: { label: 'Grandkid', likes: ['Minecraft', 'Pokémon'], age: '24_and_younger' }, city: 'Seoul', kidSafe: true },
-  { a: { label: 'Dad', likes: ['Metallica', 'The Godfather'], age: '45_to_54' }, b: { label: 'Daughter', likes: ['Olivia Rodrigo', 'Stranger Things'], age: '24_and_younger' }, city: 'New York' },
+  { a: { label: 'Grandma', likes: ['Lim Young-woong'], age: '55_and_older' }, b: { label: 'Grandkid', likes: ['Minecraft', 'Pokémon'], age: '24_and_younger' }, city: 'Seoul', audience: 'child' },
+  { a: { label: 'Dad', likes: ['Metallica', 'The Godfather'], age: '45_to_54' }, b: { label: 'Daughter', likes: ['Olivia Rodrigo', 'Stranger Things'], age: '24_and_younger' }, city: 'New York', audience: 'teen' },
   { a: { label: 'Roommate 1', likes: ['Radiohead', 'The Grand Budapest Hotel'], age: '30_to_34' }, b: { label: 'Roommate 2', likes: ['Bad Bunny', 'Fast & Furious'], age: '25_to_29' }, city: 'London' },
-  { a: { label: 'Grandpa', likes: ['Frank Sinatra', 'Casablanca'], age: '55_and_older' }, b: { label: 'Grandkid', likes: ['Bluey', 'Frozen'], age: '24_and_younger' }, city: 'Chicago', kidSafe: true },
-  { a: { label: 'Mom', likes: ['Taylor Swift', 'Gilmore Girls'], age: '35_to_44' }, b: { label: 'Son', likes: ['Fortnite', 'Spider-Man'], age: '24_and_younger' }, city: 'Los Angeles' },
+  { a: { label: 'Grandpa', likes: ['Frank Sinatra', 'Casablanca'], age: '55_and_older' }, b: { label: 'Grandkid', likes: ['Bluey', 'Frozen'], age: '24_and_younger' }, city: 'Chicago', audience: 'child' },
+  { a: { label: 'Mom', likes: ['Taylor Swift', 'Gilmore Girls'], age: '35_to_44' }, b: { label: 'Son', likes: ['Fortnite', 'Spider-Man'], age: '24_and_younger' }, city: 'Los Angeles', audience: 'teen' },
   { a: { label: 'Partner 1', likes: ['BTS', 'Squid Game'], age: '25_to_29' }, b: { label: 'Partner 2', likes: ['Pink Floyd', 'Star Wars'], age: '30_to_34' }, city: 'Tokyo' },
   { a: { label: 'Aunt', likes: ['Adele', 'Downton Abbey'], age: '45_to_54' }, b: { label: 'Nephew', likes: ['Travis Scott', 'Call of Duty'], age: '24_and_younger' }, city: 'London' },
-  { a: { label: 'Grandma', likes: ['Elvis Presley', 'The Sound of Music'], age: '55_and_older' }, b: { label: 'Grandson', likes: ['MrBeast', 'Spider-Man'], age: '24_and_younger' }, city: 'Paris', kidSafe: true },
+  { a: { label: 'Grandma', likes: ['Elvis Presley', 'The Sound of Music'], age: '55_and_older' }, b: { label: 'Grandson', likes: ['MrBeast', 'Spider-Man'], age: '24_and_younger' }, city: 'Paris', audience: 'child' },
 ];
 
 const median = (xs) => { const s = [...xs].sort((a, b) => a - b); const n = s.length; return n ? (n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2) : null; };
@@ -53,7 +53,7 @@ const stats = raw.filter((r) => r.stats).map((r) => r.stats);
 const lines = [];
 lines.push('# Measurements', '');
 lines.push(`Run: ${new Date().toISOString()} · ${PAIRS.length} fixed pairs × 5 parts of the day · live Qloo hackathon API · no cache.`, '');
-lines.push('How to read: for each part of the day the agent fetches each person\'s own Qloo list (top 100 places in the city, top 200 films / artists / shows). A pick is "shared" only if it is in both lists. "Worse rank" is the lower of the two people\'s ranks for that pick. The baseline is one Qloo call with both people\'s favourites mixed together, top result.', '');
+lines.push('How to read: for each part of the day the agent fetches each person\'s own Qloo list (top 100 places in the city, top 200 films / artists / shows). A pick is "shared" only if it is in both lists. "Worse rank" is the lower of the two people\'s ranks for that pick. The baseline is one Qloo call with both people\'s favourites mixed together (and both age bands), top result.', '');
 lines.push('These numbers say how well each pick sits in Qloo\'s own taste lists for both people. They do not measure whether real people enjoyed the day; that has not been tested.', '');
 lines.push('| | Places (morning + lunch) | Films, artists, shows |', '|---|---|---|');
 for (const [label, f] of [

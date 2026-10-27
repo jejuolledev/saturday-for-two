@@ -1,7 +1,7 @@
 const PRESETS = {
-  grandma: { aLabel: 'Grandma', aLike1: 'Lim Young-woong', aLike2: '', aLike3: '', aAge: '55_and_older', bLabel: 'Me', bLike1: 'Minecraft', bLike2: 'Pokémon', bLike3: '', bAge: '24_and_younger', city: 'Seoul', kidSafe: true },
-  dad: { aLabel: 'Dad', aLike1: 'Metallica', aLike2: 'The Godfather', aLike3: '', aAge: '45_to_54', bLabel: 'Maya', bLike1: 'Olivia Rodrigo', bLike2: 'Stranger Things', bLike3: '', bAge: '24_and_younger', city: 'New York', kidSafe: false },
-  roommates: { aLabel: 'Sam', aLike1: 'Radiohead', aLike2: 'The Grand Budapest Hotel', aLike3: '', aAge: '30_to_34', bLabel: 'Jo', bLike1: 'Bad Bunny', bLike2: 'Fast & Furious', bLike3: '', bAge: '25_to_29', city: 'London', kidSafe: false },
+  grandma: { aLabel: 'Grandma', aLike1: 'Lim Young-woong', aLike2: '', aLike3: '', aAge: '55_and_older', bLabel: 'Me', bLike1: 'Minecraft', bLike2: 'Pokémon', bLike3: '', bAge: '24_and_younger', city: 'Seoul', audience: 'child' },
+  dad: { aLabel: 'Dad', aLike1: 'Metallica', aLike2: 'The Godfather', aLike3: '', aAge: '45_to_54', bLabel: 'Maya', bLike1: 'Olivia Rodrigo', bLike2: 'Stranger Things', bLike3: '', bAge: '24_and_younger', city: 'New York', audience: 'teen' },
+  roommates: { aLabel: 'Sam', aLike1: 'Radiohead', aLike2: 'The Grand Budapest Hotel', aLike3: '', aAge: '30_to_34', bLabel: 'Jo', bLike1: 'Bad Bunny', bLike2: 'Fast & Furious', bLike3: '', bAge: '25_to_29', city: 'London', audience: 'adults' },
 };
 
 const $ = (s) => document.querySelector(s);
@@ -30,7 +30,7 @@ form.addEventListener('submit', async (ev) => {
     a: { label: f.aLabel.value, likes: [f.aLike1.value, f.aLike2.value, f.aLike3.value], age: f.aAge.value },
     b: { label: f.bLabel.value, likes: [f.bLike1.value, f.bLike2.value, f.bLike3.value], age: f.bAge.value },
     city: f.city.value,
-    kidSafe: f.kidSafe.checked,
+    audience: f.audience.value,
   };
   $('#error').hidden = true;
   $('#result').hidden = true;
@@ -83,15 +83,6 @@ function about(p) {
   return p.about?.length ? `<p class="why">${p.about.map((t) => `<span class="tag">${esc(t)}</span>`).join(' ')}</p>` : '';
 }
 
-function balance(p, A, B) {
-  if (!p.share || !p.pulledBy?.length) return '';
-  const a = Math.round(p.share.a * 100);
-  const parts = p.pulledBy.map((x) => `<span class="${x.who === 'a' ? 'pa' : 'pb'}">${esc(x.name)} ${x.pct}%</span>`).join(' · ');
-  return `<div class="balance" title="Qloo feature.explainability: how much each favourite contributed to this pick">
-    <div class="bar"><span class="ba" style="width:${a}%"></span><span class="bb" style="width:${100 - a}%"></span></div>
-    <p>Pulled in by ${parts}</p></div>`;
-}
-
 function card(p, A, B, slot) {
   const img = p.image ? `<img src="${esc(p.image)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : '';
   let head = '';
@@ -100,7 +91,7 @@ function card(p, A, B, slot) {
   return `<div class="pick ${p.kind}">${img}<div class="pick-body">${head}
     <h4>${esc(p.name)}</h4>${p.desc ? `<p class="desc">${esc(p.desc)}</p>` : ''}${p.sub ? `<p class="sub">${esc(p.sub)}</p>` : ''}
     <p class="ranks"><span class="ra">${esc(A)}: ${rank(p.ra, p.depth)}</span><span class="rb">${esc(B)}: ${rank(p.rb, p.depth)}</span></p>
-    ${about(p)}${balance(p, A, B)}</div></div>`;
+    ${about(p)}</div></div>`;
 }
 
 function render(plan) {
@@ -110,7 +101,7 @@ function render(plan) {
   $('#result-title').textContent = `${A} & ${B}: Saturday${plan.city ? ` in ${plan.city}` : ''}`;
   const shared = plan.slots.filter((s) => s.picks?.some((p) => p.kind === 'shared')).length;
   const total = plan.slots.filter((s) => s.picks?.length).length;
-  let sub = `${likes(plan.people.a)} meets ${likes(plan.people.b)}. ${shared} of ${total} parts of the day have a pick that sits high in both of your own Qloo lists.`;
+  let sub = `${likes(plan.people.a)} meets ${likes(plan.people.b)}. ${shared} of ${total} parts of the day have a pick that is in both of your own Qloo lists (top 100 places, top 200 films, artists and shows).`;
   const miss = [...plan.unresolved.a, ...plan.unresolved.b];
   if (miss.length) sub += ` Qloo had no taste data for: ${miss.join(', ')}.`;
   sub += ` ${plan.stats.qlooCalls} Qloo calls${plan.fromCache ? ' (shown from the server cache)' : `, ${(plan.stats.ms / 1000).toFixed(1)} s`}.`;

@@ -47,6 +47,7 @@ code { font: 0.86em ui-monospace, SFMono-Regular, Menlo, monospace; background: 
 label { display: block; font-size: 13px; color: var(--muted); margin-top: 8px; }
 input:not([type]), input[type=text], select, label > input:not([type=checkbox]) { display: block; width: 100%; margin-top: 6px; font: inherit; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; }
 .where { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; align-items: end; margin-top: 12px; }
+.where .who { grid-column: 1 / -1; max-width: 420px; }
 .where .check { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; color: var(--ink); font-size: 14px; }
 #go { grid-row: 1; grid-column: 2; font: inherit; font-weight: 700; font-size: 17px; padding: 11px 20px; border-radius: 12px; border: 0; background: var(--accent); color: var(--bg); cursor: pointer; }
 #go:disabled { opacity: .5; cursor: wait; }
