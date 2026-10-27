@@ -89,7 +89,8 @@ for (const body of PAIRS) {
     // LLM-only baseline: same model, no Qloo.
     const ask = `Two people spend a Saturday together${body.city ? ` in ${body.city}` : ''}. ${body.a.label} (${body.a.age || 'age not given'}) loves ${body.a.likes.join(', ')}. ${body.b.label} (${body.b.age || 'age not given'}) loves ${body.b.likes.join(', ')}.${body.audience === 'child' ? ' A child is coming.' : body.audience === 'teen' ? ' A teenager is coming.' : ''} Name ONE film, ONE music artist and ONE TV show that BOTH would enjoy, and ONE real restaurant for lunch in ${body.city}. Answer only JSON: {"film":"","artist":"","tv_show":"","restaurant":""}`;
     let picks = null, err = null;
-    for (let i = 0; i < 3 && !picks; i++) {
+    for (let i = 0; i < 6 && !picks; i++) {
+      if (i) await new Promise((r) => setTimeout(r, 4000 * i));
       try {
         const r = await chat(llm, { messages: [{ role: 'user', content: ask }], maxTokens: 3000, timeoutMs: 60000 });
         const m = String(r.message.content || '').match(/\{[\s\S]*\}/);
