@@ -13,7 +13,7 @@
     <div class="wrap">
       <p class="kicker">Saturday for Two</p>
       <h1>Grandma likes trot.<br>I like Minecraft.<br><span>What do we do on Saturday?</span></h1>
-      <p class="lede">Type what each of you loves. The agent asks Qloo's taste graph where your two tastes actually meet, and plans a day around that. When nothing meets, it says so and you take turns.</p>
+      <p class="lede">Type what each of you loves. The agent asks Qloo's taste graph where your two tastes actually meet, re-asks when an answer looks wrong, and plans a day around that. When nothing meets, it says so and you take turns.</p>
     </div>
   </header>
 
@@ -111,12 +111,13 @@
       <h2>How it works</h2>
       <ol>
         <li><b>Find each favourite in Qloo.</b> Each name goes to <code>/search</code>. If the first match has no taste data, the agent tries the next one and tells you.</li>
-        <li><b>Get each person's own list</b> for every part of the day with <code>/v2/insights</code>, using their age band if given: top 100 places in your city that are open on Saturday (no bars if someone under 18 is coming), top 200 films, artists and shows (rated for who is coming).</li>
-        <li><b>Find where the lists meet.</b> A pick is only called shared if it is in <b>both</b> people's own lists, and the agent prefers the one whose <i>worse</i> rank is best. Each candidate is scored for each person with <code>filter.results.entities</code>. Mixing everyone's likes into one call is not enough: one person's taste usually drowns out the other, and the plan shows you what that call would have picked.</li>
-        <li><b>Show the evidence.</b> Every pick shows its rank in each person's own list, Qloo's English description and its Qloo tags. The full log of Qloo calls is one click away.</li>
-        <li><b>Be honest.</b> If nothing is in both lists, the plan says so and you take turns: from each person's top 10, the pick the other person minds least.</li>
+        <li><b>First pass, all five parts at once.</b> Each person's own Qloo list (<code>/v2/insights</code>): top 100 places in your city open on Saturday, top 200 films, artists and shows, with age bands and ratings for who is coming. Every candidate is scored for each person with <code>filter.results.entities</code>.</li>
+        <li><b>Checks, then re-plan.</b> Is a favourite's genre missing from that person's list (a trot fan whose list is K-pop)? Is lunch with a child at a place Qloo tags as serving alcohol? Is nothing in both lists? The planner re-asks Qloo where a check fails: within the genre, or restaurants tagged good for kids with no alcohol tags.</li>
+        <li><b>Choose and explain.</b> Shared only if it is in <b>both</b> lists; otherwise you take turns. A language model (NVIDIA Nemotron when configured) picks by reference from Qloo's results and writes one line per pick; every name, tag and rank in that line is checked against Qloo's data before you see it.</li>
+        <li><b>Show the evidence.</b> Both ranks on every card, what one mixed Qloo call would have picked, and every Qloo call one click away.</li>
       </ol>
-      <p class="fine">No language model writes this plan, so it cannot invent a place or a film: every pick is a Qloo entity. Results describe what people with similar tastes tend to like; they are not a promise about any one person.</p>
+      <p class="fine">Every pick is a Qloo entity; the model cannot add a place or a film. With no model configured the same steps run under fixed rules, and the plan says so. Results describe what people with similar tastes tend to like; they are not a promise about any one person.</p>
+      <p class="fine"><b>Who would use this:</b> ticketing, family travel and streaming products that sell one plan to two or more people with different tastes.</p>
     </section>
   </main>
 
