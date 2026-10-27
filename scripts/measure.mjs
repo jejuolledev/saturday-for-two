@@ -10,11 +10,11 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createQloo } from '../lib/qloo.mjs';
 import { planSaturday, normalizeRequest, ownRank, entities } from '../lib/agent.mjs';
-import { createEngine, hasAlcoholTag, hasKidTag } from '../lib/engine.mjs';
+import { createEngine, hasAlcoholTag, hasKidTag, FAMILY_MUSIC_TAGS } from '../lib/engine.mjs';
 import { llmConfig, chat } from '../lib/llm.mjs';
 
 const PAIRS = [
-  { a: { label: 'Grandma', likes: ['Lim Young-woong'], age: '55_and_older' }, b: { label: 'Grandkid', likes: ['Minecraft', 'Pokémon'], age: '24_and_younger' }, city: 'Seoul', audience: 'child' },
+  { a: { label: 'Grandma', likes: ['Lim Young-woong', 'Reply 1988'], age: '55_and_older' }, b: { label: 'Grandkid', likes: ['Minecraft', 'Pokémon'], age: '24_and_younger' }, city: 'Seoul', audience: 'child' },
   { a: { label: 'Dad', likes: ['Metallica', 'The Godfather'], age: '45_to_54' }, b: { label: 'Daughter', likes: ['Olivia Rodrigo', 'Stranger Things'], age: '24_and_younger' }, city: 'New York', audience: 'teen' },
   { a: { label: 'Roommate 1', likes: ['Radiohead', 'The Grand Budapest Hotel'], age: '30_to_34' }, b: { label: 'Roommate 2', likes: ['Bad Bunny', 'Fast & Furious'], age: '25_to_29' }, city: 'London' },
   { a: { label: 'Grandpa', likes: ['Frank Sinatra', 'Casablanca'], age: '55_and_older' }, b: { label: 'Grandkid', likes: ['Bluey', 'Frozen'], age: '24_and_younger' }, city: 'Chicago', audience: 'child' },
@@ -33,6 +33,7 @@ const cell = (x) => (x == null ? x : String(x).replace(/\|/g, '/'));
 const firstCmp = (engine, id) => (engine.history.get(id) || [])[0] || engine.last.get(id);
 const sig = (engine, who) => engine.fav[who].map((f) => f.id).join(',');
 
+const familyRows = [];
 const raw = [], rows = [], genreRows = [], lunchRows = [], llmOnlyRows = [], modelRuns = [];
 
 for (const body of PAIRS) {
@@ -70,6 +71,17 @@ for (const body of PAIRS) {
       pickIn = `${entities(chk).length} of ${mine.length}`;
     }
     genreRows.push({ pair: pairName(body), who: body[who].label, fav: engine.fav[who].map((f) => f.name).join(' + '), genres: g.map((x) => x.name).join('/'), top10InGenre: entities(inG).length, replanned: !!ms?.lists && ms.lists[who] !== m1.listNames[who], pickIn });
+  }
+
+  // Child's songs: how many of the young person's own top 10 artists (no filter) Qloo tags family-friendly, vs their picks now.
+  if (body.audience === 'child') {
+    const who = body.a.age === '24_and_younger' ? 'a' : 'b';
+    const plain = await qloo.insights({ 'filter.type': 'urn:entity:artist', 'signal.interests.entities': sig(engine, who), 'signal.demographics.age': body[who].age, take: 10 });
+    const ids = entities(plain).map((e) => e.entity_id);
+    const fam = await qloo.insights({ 'filter.type': 'urn:entity:artist', 'signal.interests.entities': sig(engine, who), 'filter.tags': FAMILY_MUSIC_TAGS.join(','), 'filter.results.entities': ids.join(','), take: ids.length });
+    const mine = (ms?.picks || []).filter((p) => p.kind === (who === 'a' ? 'turnA' : 'turnB') || p.kind === 'shared');
+    const famPick = mine.length ? entities(await qloo.insights({ 'filter.type': 'urn:entity:artist', 'signal.interests.entities': sig(engine, who), 'filter.tags': FAMILY_MUSIC_TAGS.join(','), 'filter.results.entities': mine.map((p) => p.id).join(','), take: mine.length })).length : 0;
+    familyRows.push({ pair: pairName(body), who: body[who].label, top10Family: entities(fam).length, top10: ids.length, top3: entities(plain).slice(0, 3).map((e) => cell(e.name)).join(', '), picks: mine.map((p) => cell(p.name)).join(', '), picksFamily: `${famPick} of ${mine.length}` });
   }
 
   // Child lunch: old filter (bars excluded) vs new (tagged good for kids, no alcohol tags), every city, as if a child came.
@@ -159,6 +171,12 @@ L.push('## 2. A favourite\'s music genre (the trot problem)', '');
 L.push('For every person whose favourite carries a Qloo music genre: how many of their own top 10 artists (first pass, no genre filter) carry that genre, whether the planner re-asked Qloo within the genre (rule: 2 or fewer of 10), and how many of that person\'s song picks carry the genre at the end (checked with Qloo `filter.tags` + `filter.results.entities`).', '');
 L.push('| Pair | Person | Favourite → Qloo genre | Top 10 in genre, first pass | Re-planned | Their song picks in genre |', '|---|---|---|---|---|---|');
 for (const g of genreRows) L.push(`| ${g.pair} | ${g.who} | ${g.fav} → ${g.genres} | ${g.top10InGenre} of 10 | ${g.replanned ? 'yes' : 'no'} | ${g.pickIn ?? '—'} |`);
+L.push('');
+
+L.push('## 2b. Songs with a child in the car', '');
+L.push('Qloo has no lyric rating for artists. With a child along, the youngest person\'s artists come only from those Qloo tags family-friendly (`urn:tag:audience:qloo:family_friendly`, `urn:tag:style:qloo:family_friendly`). Below: their own top 10 with no filter, and their song picks now.', '');
+L.push('| Pair | Person | Own top 3, no filter | Own top 10 tagged family-friendly | Their song picks now | …tagged family-friendly |', '|---|---|---|---|---|---|');
+for (const f of familyRows) L.push(`| ${f.pair} | ${f.who} | ${f.top3} | ${f.top10Family} of ${f.top10} | ${f.picks || '—'} | ${f.picksFamily} |`);
 L.push('');
 
 L.push('## 3. Lunch with a child (the alcohol problem)', '');

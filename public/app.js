@@ -1,5 +1,5 @@
 const PRESETS = {
-  grandma: { aLabel: 'Grandma', aLike1: 'Lim Young-woong', aLike2: '', aLike3: '', aAge: '55_and_older', bLabel: 'Me', bLike1: 'Minecraft', bLike2: 'Pokémon', bLike3: '', bAge: '24_and_younger', city: 'Seoul', audience: 'child' },
+  grandma: { aLabel: 'Grandma', aLike1: 'Lim Young-woong', aLike2: 'Reply 1988', aLike3: '', aAge: '55_and_older', bLabel: 'Me', bLike1: 'Minecraft', bLike2: 'Pokémon', bLike3: '', bAge: '24_and_younger', city: 'Seoul', audience: 'child' },
   dad: { aLabel: 'Dad', aLike1: 'Metallica', aLike2: 'The Godfather', aLike3: '', aAge: '45_to_54', bLabel: 'Maya', bLike1: 'Olivia Rodrigo', bLike2: 'Stranger Things', bLike3: '', bAge: '24_and_younger', city: 'New York', audience: 'teen' },
   roommates: { aLabel: 'Sam', aLike1: 'Radiohead', aLike2: 'The Grand Budapest Hotel', aLike3: '', aAge: '30_to_34', bLabel: 'Jo', bLike1: 'Bad Bunny', bLike2: 'Fast & Furious', bLike3: '', bAge: '25_to_29', city: 'London', audience: 'adults' },
 };
@@ -91,7 +91,7 @@ function card(p, A, B, slot) {
   if (p.kind === 'turnA') head = `<p class="turn ta">${esc(cap1(poss(A)))} turn</p>`;
   if (p.kind === 'turnB') head = `<p class="turn tb">${esc(cap1(poss(B)))} turn</p>`;
   return `<div class="pick ${p.kind}">${img}<div class="pick-body">${head}
-    <h4>${esc(p.name)}</h4>${p.desc ? `<p class="desc">${esc(p.desc)}</p>` : ''}${p.sub ? `<p class="sub">${esc(p.sub)}</p>` : ''}
+    <h4>${esc(p.name)}${p.alt ? ` <span class="alt">${esc(p.alt)}</span>` : ''}</h4>${p.desc ? `<p class="desc">${esc(p.desc)}</p>` : ''}${p.sub ? `<p class="sub">${esc(p.sub)}</p>` : ''}
     <p class="ranks"><span class="ra">${esc(A)}: ${rank(p.ra, p.depth)}</span><span class="rb">${esc(B)}: ${rank(p.rb, p.depth)}</span>${slot.id === 'lunch' && p.kidTag ? '<span class="safe">good for kids · no alcohol listed</span>' : ''}</p>
     ${p.why ? `<p class="reason">${esc(p.why)}${p.whyBy === 'model' ? ' <span class="checked" title="Written by the model, then checked: every name, tag and rank in it is in Qloo\'s data for this plan.">checked against Qloo</span>' : ''}</p>` : ''}
     ${about(p)}</div></div>`;
@@ -121,7 +121,7 @@ function render(plan) {
     if (s.skipped) return `<li class="slot skipped"><div class="time">${esc(s.slot.time)}</div><div class="slot-body"><h3>${icon} ${esc(s.slot.title)}</h3><p class="sub">${esc(s.skipped)}</p></div></li>`;
     const isTurns = s.picks.some((p) => p.kind !== 'shared');
     const note = isTurns && !s.picks.some((p) => p.kind === 'shared')
-      ? `<p class="honest">No ${SLOT_NOUN[s.slot.id]} is in both of your own top ${s.picks[0].depth} lists, so: take turns. Each pick comes from one person's top 10, the one the other person minds least.</p>`
+      ? `<p class="honest">No ${SLOT_NOUN[s.slot.id]} is in both of your own top ${s.picks[0].depth} lists, so: take turns. Each turn is one person's own pick.</p>`
       : isTurns ? `<p class="honest">Only ${s.picks.filter((p) => p.kind === 'shared').length} shared; the rest is taking turns.</p>` : '';
     const naive = s.naive && !s.picks.some((p) => p.name === s.naive.name)
       ? `<p class="naive">Mixing everyone's likes into one Qloo call would have picked <b>${esc(s.naive.name)}</b>: ${rank(s.naive.ra, s.naive.depth)} for ${esc(A)}, ${rank(s.naive.rb, s.naive.depth)} for ${esc(B)}.</p>` : '';
