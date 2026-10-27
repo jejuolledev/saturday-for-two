@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saturday for Two</title>
+  <meta name="description" content="Two people, very different tastes, one Saturday. An agent that uses Qloo's taste graph to find what both of you will actually enjoy.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="kicker">Saturday for Two</p>
+      <h1>Grandma likes trot.<br>I like Minecraft.<br><span>What do we do on Saturday?</span></h1>
+      <p class="lede">Type what each of you loves. The agent asks Qloo's taste graph where your two tastes actually meet, and plans a day around that. When nothing meets, it says so and you take turns.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="presets" aria-label="Examples">
+      <span>Try an example:</span>
+      <button type="button" class="chip" data-preset="grandma">Grandma &amp; grandkid · Seoul</button>
+      <button type="button" class="chip" data-preset="dad">Dad &amp; teen daughter · New York</button>
+      <button type="button" class="chip" data-preset="roommates">New roommates · London</button>
+    </section>
+
+    <form id="form" autocomplete="off">
+      <div class="people">
+        <fieldset class="person a">
+          <legend><input name="aLabel" value="Grandma" maxlength="24" aria-label="First person's name"></legend>
+          <label>Loves (1 to 3: artists, films, shows, games, brands)
+            <input name="aLike1" value="Lim Young-woong" maxlength="60">
+            <input name="aLike2" value="" maxlength="60" placeholder="optional">
+            <input name="aLike3" value="" maxlength="60" placeholder="optional">
+          </label>
+          <label>Age
+            <select name="aAge">
+              <option value="">Prefer not to say</option>
+              <option value="24_and_younger">Under 25</option>
+              <option value="25_to_29">25–29</option>
+              <option value="30_to_34">30–34</option>
+              <option value="35_to_44">35–44</option>
+              <option value="45_to_54">45–54</option>
+              <option value="55_and_older" selected>55+</option>
+            </select>
+          </label>
+        </fieldset>
+        <div class="and" aria-hidden="true">&amp;</div>
+        <fieldset class="person b">
+          <legend><input name="bLabel" value="Me" maxlength="24" aria-label="Second person's name"></legend>
+          <label>Loves (1 to 3)
+            <input name="bLike1" value="Minecraft" maxlength="60">
+            <input name="bLike2" value="Pokémon" maxlength="60" placeholder="optional">
+            <input name="bLike3" value="" maxlength="60" placeholder="optional">
+          </label>
+          <label>Age
+            <select name="bAge">
+              <option value="">Prefer not to say</option>
+              <option value="24_and_younger" selected>Under 25</option>
+              <option value="25_to_29">25–29</option>
+              <option value="30_to_34">30–34</option>
+              <option value="35_to_44">35–44</option>
+              <option value="45_to_54">45–54</option>
+              <option value="55_and_older">55+</option>
+            </select>
+          </label>
+        </fieldset>
+      </div>
+      <div class="where">
+        <label>City for the outing and lunch
+          <input name="city" value="Seoul" maxlength="60" placeholder="e.g. Seoul, New York, London">
+        </label>
+        <label class="check"><input type="checkbox" name="kidSafe" checked> A child is coming (films and shows rated G / PG)</label>
+        <button type="submit" id="go">Plan our Saturday</button>
+      </div>
+    </form>
+
+    <section id="working" class="working" hidden aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <div>
+        <p class="working-title">The agent is asking Qloo…</p>
+        <ol id="steps"></ol>
+      </div>
+    </section>
+
+    <p id="error" class="error" hidden role="alert"></p>
+
+    <section id="result" hidden>
+      <div class="result-head">
+        <h2 id="result-title"></h2>
+        <p id="result-sub"></p>
+      </div>
+      <ol id="timeline" class="timeline"></ol>
+      <details class="trace">
+        <summary>Show the agent's work: every Qloo call it made</summary>
+        <ul id="trace-steps" class="trace-steps"></ul>
+        <table id="calls"><thead><tr><th>#</th><th>Why</th><th>Endpoint and parameters</th><th>ms</th></tr></thead><tbody></tbody></table>
+      </details>
+    </section>
+
+    <section class="how">
+      <h2>How it works</h2>
+      <ol>
+        <li><b>Find each favourite in Qloo.</b> Each name goes to <code>/search</code>. If the first match has no taste data, the agent tries the next one and tells you.</li>
+        <li><b>Get each person's own list</b> for every part of the day with <code>/v2/insights</code>, using their age band if given: top 100 places in your city that are open on Saturday, top 200 films, artists and shows.</li>
+        <li><b>Find where the lists meet.</b> A pick is only called shared if it is in <b>both</b> people's own lists, and the agent prefers the one whose <i>worse</i> rank is best. Each candidate is scored for each person with <code>filter.results.entities</code>. Mixing everyone's likes into one call is not enough: one person's taste usually drowns out the other, and the plan shows you what that call would have picked.</li>
+        <li><b>Explain it.</b> <code>feature.explainability</code> shows how much each favourite pulled a pick in, and Qloo tags say what it is.</li>
+        <li><b>Be honest.</b> If nothing is in both lists, the plan says so and you take turns: from each person's top 10, the pick the other person minds least.</li>
+      </ol>
+      <p class="fine">No language model writes this plan, so it cannot invent a place or a film: every pick is a Qloo entity. Results describe what people with similar tastes tend to like; they are not a promise about any one person.</p>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    Built for the Qloo Agentic Hackathon 2026 by MoaHub (Korea). Taste data: <a href="https://www.qloo.com" rel="noopener">Qloo</a>. Open source, MIT.
+  </footer>
+  <script src="app.js" type="module"></script>
+</body>
+</html>

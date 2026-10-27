@@ -1,0 +1,16 @@
+{
+  "name": "saturday-for-two",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Two people, very different tastes, one Saturday. An agent that uses Qloo's taste graph to find what both of them will actually enjoy.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "node --env-file=.env.local server.mjs",
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "measure": "node --env-file=.env.local scripts/measure.mjs",
+    "mcp": "node --env-file=.env.local mcp/server.mjs"
+  }
+}
