@@ -67,8 +67,10 @@ form.addEventListener('submit', async (ev) => {
 function handle(msg) {
   if (msg.type === 'step') {
     const li = document.createElement('li');
-    li.textContent = msg.detail;
+    if (msg.step === 'decide' || msg.step === 'planner') { li.className = 'decide'; li.textContent = (msg.step === 'decide' ? 'Agent: ' : '') + msg.detail; }
+    else li.textContent = msg.detail;
     $('#steps').appendChild(li);
+    li.scrollIntoView({ block: 'nearest' });
   } else if (msg.type === 'plan') render(msg.plan);
   else if (msg.type === 'error') showError(msg.error);
 }
@@ -90,7 +92,8 @@ function card(p, A, B, slot) {
   if (p.kind === 'turnB') head = `<p class="turn tb">${esc(cap1(poss(B)))} turn</p>`;
   return `<div class="pick ${p.kind}">${img}<div class="pick-body">${head}
     <h4>${esc(p.name)}</h4>${p.desc ? `<p class="desc">${esc(p.desc)}</p>` : ''}${p.sub ? `<p class="sub">${esc(p.sub)}</p>` : ''}
-    <p class="ranks"><span class="ra">${esc(A)}: ${rank(p.ra, p.depth)}</span><span class="rb">${esc(B)}: ${rank(p.rb, p.depth)}</span></p>
+    <p class="ranks"><span class="ra">${esc(A)}: ${rank(p.ra, p.depth)}</span><span class="rb">${esc(B)}: ${rank(p.rb, p.depth)}</span>${slot.id === 'lunch' && p.kidTag ? '<span class="safe">good for kids · no alcohol listed</span>' : ''}</p>
+    ${p.why ? `<p class="reason">${esc(p.why)}${p.whyBy === 'model' ? ' <span class="checked" title="Written by the model, then checked: every name, tag and rank in it is in Qloo\'s data for this plan.">checked against Qloo</span>' : ''}</p>` : ''}
     ${about(p)}</div></div>`;
 }
 
@@ -106,6 +109,12 @@ function render(plan) {
   if (miss.length) sub += ` Qloo had no taste data for: ${miss.join(', ')}.`;
   sub += ` ${plan.stats.qlooCalls} Qloo calls${plan.fromCache ? ' (shown from the server cache)' : `, ${(plan.stats.ms / 1000).toFixed(1)} s`}.`;
   $('#result-sub').textContent = sub;
+  const pl = plan.planner || {};
+  $('#planner').innerHTML = pl.kind === 'model'
+    ? `<b>Planned by ${esc(pl.model)}</b> via ${esc(pl.provider)}: it chose what to re-ask Qloo (${pl.replans || 0} re-plan${pl.replans === 1 ? '' : 's'}), picked, and wrote the reasons. Every pick is a Qloo entity; every sentence was checked against Qloo's data (${pl.rejectedWhy || 0} rejected and rewritten or replaced).${pl.ruleParts?.length ? ` The rule-based planner finished: ${esc(pl.ruleParts.join(', '))}.` : ''}`
+    : '<b>Rule-based planner</b> (no language model configured on this server): the same Qloo tools and checks, fixed rules for re-planning, template sentences.';
+  $('#summary').textContent = plan.summary || '';
+  $('#summary').hidden = !plan.summary;
 
   $('#timeline').innerHTML = plan.slots.map((s) => {
     const icon = SLOT_ICON[s.slot.id] || '•';
@@ -116,7 +125,13 @@ function render(plan) {
       : isTurns ? `<p class="honest">Only ${s.picks.filter((p) => p.kind === 'shared').length} shared; the rest is taking turns.</p>` : '';
     const naive = s.naive && !s.picks.some((p) => p.name === s.naive.name)
       ? `<p class="naive">Mixing everyone's likes into one Qloo call would have picked <b>${esc(s.naive.name)}</b>: ${rank(s.naive.ra, s.naive.depth)} for ${esc(A)}, ${rank(s.naive.rb, s.naive.depth)} for ${esc(B)}.</p>` : '';
-    return `<li class="slot"><div class="time">${esc(s.slot.time)}</div><div class="slot-body"><h3>${icon} ${esc(s.slot.title)}</h3>${note}
+    const rp = s.replanned;
+    const replan = rp ? `<div class="replan"><p class="replan-h">The agent re-planned this</p>
+      <p>${rp.before.checks.map(esc).join(' ') || esc(rp.reason)}</p>
+      <div class="ba"><div><span class="lab">First pass · ${esc(rp.before.lists.a)}</span>${rp.before.topA.map((n) => `<span class="tag strike">${esc(n)}</span>`).join(' ')}</div>
+      <div><span class="lab">Re-asked Qloo · ${esc(rp.after.lists.a)}</span>${rp.after.topA.map((n) => `<span class="tag ta">${esc(n)}</span>`).join(' ')}</div></div>
+      ${rp.after.lists.b !== rp.before.lists.b ? `<div class="ba"><div><span class="lab">First pass · ${esc(rp.before.lists.b)}</span>${rp.before.topB.map((n) => `<span class="tag strike">${esc(n)}</span>`).join(' ')}</div><div><span class="lab">Re-asked Qloo · ${esc(rp.after.lists.b)}</span>${rp.after.topB.map((n) => `<span class="tag tb">${esc(n)}</span>`).join(' ')}</div></div>` : ''}</div>` : '';
+    return `<li class="slot"><div class="time">${esc(s.slot.time)}</div><div class="slot-body"><h3>${icon} ${esc(s.slot.title)}</h3>${replan}${note}
       <div class="picks">${s.picks.map((p) => card(p, A, B, s.slot)).join('')}</div>${naive}</div></li>`;
   }).join('');
 

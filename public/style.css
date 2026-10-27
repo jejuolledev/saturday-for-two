@@ -101,6 +101,18 @@ input:not([type]), input[type=text], select, label > input:not([type=checkbox]) 
 .trace td code { white-space: normal; word-break: break-all; background: none; padding: 0; }
 .trace tr.bad td { color: var(--a); }
 
+.planner { font-size: 14px; margin: 0 0 8px; padding: 8px 12px; border-radius: 10px; background: var(--card); border: 1px solid var(--line); }
+.summary { font-size: 17px; margin: 0 0 12px; }
+#steps li.decide { color: var(--ink); font-weight: 600; }
+.reason { margin: 6px 0 0; font-size: 15px; }
+.checked { font-size: 11px; font-weight: 700; color: var(--both); white-space: nowrap; }
+.safe { background: var(--both-soft); }
+.replan { margin: 0 0 10px; padding: 10px 12px; border-radius: 12px; background: var(--card); border: 2px solid var(--both); }
+.replan p { margin: 0 0 6px; font-size: 14px; }
+.replan-h { font-weight: 800; color: var(--both); text-transform: uppercase; letter-spacing: .05em; font-size: 12px !important; }
+.replan .ba { display: grid; gap: 6px; margin-top: 4px; }
+.replan .lab { display: block; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.tag.strike { text-decoration: line-through; opacity: .7; }
 .how { margin: 40px 0 16px; }
 .how h2 { font-size: 22px; }
 .how li { margin-bottom: 8px; }
