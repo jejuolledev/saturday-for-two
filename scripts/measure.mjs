@@ -99,14 +99,16 @@ for (const body of PAIRS) {
 
   if (withLLM) {
     // LLM-only baseline: same model, no Qloo.
-    const ask = `Two people spend a Saturday together${body.city ? ` in ${body.city}` : ''}. ${body.a.label} (${body.a.age || 'age not given'}) loves ${body.a.likes.join(', ')}. ${body.b.label} (${body.b.age || 'age not given'}) loves ${body.b.likes.join(', ')}.${body.audience === 'child' ? ' A child is coming.' : body.audience === 'teen' ? ' A teenager is coming.' : ''} Name ONE film, ONE music artist and ONE TV show that BOTH would enjoy, and ONE real restaurant for lunch in ${body.city}. Answer only JSON: {"film":"","artist":"","tv_show":"","restaurant":""}`;
+    // Same question and same tool call the live page uses (lib/planner.mjs, aloneAsk).
+    const ask = `Two people spend a Saturday together${body.city ? ` in ${body.city}` : ''}. ${body.a.label} (${body.a.age ? `age ${body.a.age.replace(/_/g, ' ')}` : 'age not given'}) loves ${body.a.likes.join(', ')}. ${body.b.label} (${body.b.age ? `age ${body.b.age.replace(/_/g, ' ')}` : 'age not given'}) loves ${body.b.likes.join(', ')}.${body.audience === 'child' ? ' A child is coming.' : body.audience === 'teen' ? ' A teenager is coming.' : ''} Call suggest with ONE film, ONE music artist and ONE TV show that BOTH would enjoy, and ONE real restaurant for lunch in ${body.city}.`;
+    const tool = [{ type: 'function', function: { name: 'suggest', description: 'Your suggestions.', parameters: { type: 'object', properties: { film: { type: 'string' }, artist: { type: 'string' }, tv_show: { type: 'string' }, restaurant: { type: 'string' } }, required: ['film', 'artist', 'tv_show'] } } }];
     let picks = null, err = null;
     for (let i = 0; i < 6 && !picks; i++) {
       if (i) await new Promise((r) => setTimeout(r, 4000 * i));
       try {
-        const r = await chat(llm, { messages: [{ role: 'user', content: ask }], maxTokens: 3000, timeoutMs: 60000 });
-        const m = String(r.message.content || '').match(/\{[\s\S]*\}/);
-        picks = m ? JSON.parse(m[0]) : null;
+        const r = await chat(llm, { messages: [{ role: 'user', content: ask }], tools: tool, maxTokens: 3000, timeoutMs: 44000 });
+        const args = r.message.tool_calls?.[0]?.function?.arguments;
+        picks = args ? JSON.parse(args) : null;
       } catch (e) { err = e.message; }
     }
     for (const [k, slotId, type] of [['film', 'movie', 'urn:entity:movie'], ['artist', 'music', 'urn:entity:artist'], ['tv_show', 'evening', 'urn:entity:tv_show'], ['restaurant', 'lunch', 'urn:entity:place']]) {

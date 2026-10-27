@@ -112,6 +112,10 @@ input:not([type]), input[type=text], select, label > input:not([type=checkbox]) 
 .replan-h { font-weight: 800; color: var(--both); text-transform: uppercase; letter-spacing: .05em; font-size: 12px !important; }
 .replan .ba { display: grid; gap: 6px; margin-top: 4px; }
 .replan .lab { display: block; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.did { margin: 0 0 12px; padding: 10px 14px; border-radius: 12px; background: var(--both-soft); }
+.did-h { margin: 0 0 4px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--both); }
+.did ul { margin: 0; padding-left: 18px; font-size: 15px; }
+.alone { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
 .alt { font-weight: 500; font-size: 15px; color: var(--muted); }
 .tag.strike { text-decoration: line-through; opacity: .7; }
 .how { margin: 40px 0 16px; }

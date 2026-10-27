@@ -10,6 +10,20 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const rank = (r, depth) => (r <= depth ? `#${r}` : `outside top ${depth}`);
 const poss = (l) => (/^(me|i)$/i.test(String(l).trim()) ? 'my' : `${l}'s`);
 const cap1 = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+// Display-only Revised Romanization of Hangul (no sound-change rules), for names Qloo has no Latin alias for.
+const RR_I = ['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+const RR_V = ['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+const RR_F = ['','k','k','k','n','n','n','t','l','k','m','l','l','l','p','l','m','p','p','t','t','ng','t','t','k','t','p','t'];
+function romanize(str) {
+  if (!/[\uac00-\ud7a3]/.test(str)) return '';
+  let out = '';
+  for (const ch of str) {
+    const c = ch.charCodeAt(0) - 0xac00;
+    if (c < 0 || c > 11171) { out += ch; continue; }
+    out += RR_I[Math.floor(c / 588)] + RR_V[Math.floor((c % 588) / 28)] + RR_F[c % 28];
+  }
+  return out.replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase());
+}
 const SLOT_ICON = { morning: '🌳', lunch: '🍜', movie: '🎬', music: '🎧', evening: '📺' };
 const SLOT_NOUN = { morning: 'place', lunch: 'restaurant', movie: 'film', music: 'artist', evening: 'show' };
 
@@ -91,7 +105,7 @@ function card(p, A, B, slot) {
   if (p.kind === 'turnA') head = `<p class="turn ta">${esc(cap1(poss(A)))} turn</p>`;
   if (p.kind === 'turnB') head = `<p class="turn tb">${esc(cap1(poss(B)))} turn</p>`;
   return `<div class="pick ${p.kind}">${img}<div class="pick-body">${head}
-    <h4>${esc(p.name)}${p.alt ? ` <span class="alt">${esc(p.alt)}</span>` : ''}</h4>${p.desc ? `<p class="desc">${esc(p.desc)}</p>` : ''}${p.sub ? `<p class="sub">${esc(p.sub)}</p>` : ''}
+    <h4>${esc(p.name)}${p.alt ? ` <span class="alt">${esc(p.alt)}</span>` : romanize(p.name) ? ` <span class="alt" title="romanised by this page">${esc(romanize(p.name))}</span>` : ''}</h4>${p.desc ? `<p class="desc">${esc(p.desc)}</p>` : ''}${p.sub ? `<p class="sub">${esc(p.sub)}</p>` : ''}
     <p class="ranks"><span class="ra">${esc(A)}: ${rank(p.ra, p.depth)}</span><span class="rb">${esc(B)}: ${rank(p.rb, p.depth)}</span>${slot.id === 'lunch' && p.kidTag ? '<span class="safe">good for kids · no alcohol listed</span>' : ''}</p>
     ${p.why ? `<p class="reason">${esc(p.why)}${p.whyBy === 'model' ? ' <span class="checked" title="Written by the model, then checked: every name, tag and rank in it is in Qloo\'s data for this plan.">checked against Qloo</span>' : ''}</p>` : ''}
     ${about(p)}</div></div>`;
@@ -113,6 +127,16 @@ function render(plan) {
   $('#planner').innerHTML = pl.kind === 'model'
     ? `<b>Planned by ${esc(pl.model)}</b> via ${esc(pl.provider)}: it chose what to re-ask Qloo (${pl.replans || 0} re-plan${pl.replans === 1 ? '' : 's'}), picked, and wrote the reasons. Every pick is a Qloo entity; every sentence was checked against Qloo's data (${pl.rejectedWhy || 0} rejected and rewritten or replaced).${pl.ruleParts?.length ? ` The rule-based planner finished: ${esc(pl.ruleParts.join(', '))}.` : ''}`
     : '<b>Rule-based planner</b> (no language model configured on this server): the same Qloo tools and checks, fixed rules for re-planning, template sentences.';
+  const did = [];
+  for (const s of plan.slots) {
+    if (s.replanned) did.push(`<li><b>${esc(s.slot.title)}:</b> ${esc((s.replanned.before.checks[0] || s.replanned.reason || 'a check failed'))} → re-asked Qloo (${esc(s.lists.a)} / ${esc(s.lists.b)}).</li>`);
+    if (s.lunchFilter === 'kids') did.push(`<li><b>Lunch:</b> a child is coming → only restaurants Qloo tags good for kids, with no alcohol tags.</li>`);
+    if (s.lists && /family-friendly/.test(`${s.lists.a} ${s.lists.b}`)) did.push(`<li><b>Songs:</b> a child is in the car → the youngest person's artists come only from ones Qloo tags family-friendly.</li>`);
+  }
+  const al = plan.slots.filter((s) => s.alone && ['movie', 'music', 'evening'].includes(s.slot.id));
+  if (al.length) did.push(`<li><b>Without Qloo:</b> the same model, asked alone, named ${al.map((s) => `<i>${esc(s.alone.said)}</i>`).join(', ')}; ${al.filter((s) => s.alone.found && s.alone.ra <= s.alone.depth && s.alone.rb <= s.alone.depth).length} of ${al.length} ${al.length === 1 ? 'is' : 'are'} in both of your lists.</li>`);
+  $('#did').innerHTML = did.length ? `<p class="did-h">What the agent did</p><ul>${did.join('')}</ul>` : '';
+  $('#did').hidden = !did.length;
   $('#summary').textContent = plan.summary || '';
   $('#summary').hidden = !plan.summary;
 
@@ -131,8 +155,10 @@ function render(plan) {
       <div class="ba"><div><span class="lab">First pass · ${esc(rp.before.lists.a)}</span>${rp.before.topA.map((n) => `<span class="tag strike">${esc(n)}</span>`).join(' ')}</div>
       <div><span class="lab">Re-asked Qloo · ${esc(rp.after.lists.a)}</span>${rp.after.topA.map((n) => `<span class="tag ta">${esc(n)}</span>`).join(' ')}</div></div>
       ${rp.after.lists.b !== rp.before.lists.b ? `<div class="ba"><div><span class="lab">First pass · ${esc(rp.before.lists.b)}</span>${rp.before.topB.map((n) => `<span class="tag strike">${esc(n)}</span>`).join(' ')}</div><div><span class="lab">Re-asked Qloo · ${esc(rp.after.lists.b)}</span>${rp.after.topB.map((n) => `<span class="tag tb">${esc(n)}</span>`).join(' ')}</div></div>` : ''}</div>` : '';
+    const al = s.alone;
+    const alone = al ? `<p class="alone">Asked alone, without Qloo, the model said <b>${esc(al.said)}</b>${al.found ? `: ${rank(al.ra, al.depth)} for ${esc(A)}, ${rank(al.rb, al.depth)} for ${esc(B)}${al.ra <= al.depth && al.rb <= al.depth ? ' (in both lists: here the model alone agrees)' : ''}${al.favouriteOf ? ` (it simply repeated ${esc(poss(al.favouriteOf))} own favourite)` : ''}` : ' (not found in Qloo)'}.</p>` : '';
     return `<li class="slot"><div class="time">${esc(s.slot.time)}</div><div class="slot-body"><h3>${icon} ${esc(s.slot.title)}</h3>${replan}${note}
-      <div class="picks">${s.picks.map((p) => card(p, A, B, s.slot)).join('')}</div>${naive}</div></li>`;
+      <div class="picks">${s.picks.map((p) => card(p, A, B, s.slot)).join('')}</div>${naive}${alone}</div></li>`;
   }).join('');
 
   $('#trace-steps').innerHTML = plan.trace.map((t) => `<li>${esc(t.detail)}</li>`).join('');
