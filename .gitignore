@@ -6,3 +6,5 @@ __pycache__/
 scratch/
 measurements-raw/
 docs/demo.mp4
+.vercel
+.env*
