@@ -52,11 +52,11 @@ First buyer: family day-out and travel apps, which already sell "what shall we d
 
 8 fixed pairs (e.g. Lim Young-woong × Minecraft + Pokémon in Seoul, Metallica + The Godfather × Olivia Rodrigo + Stranger Things in New York) × 5 parts of the day, live API.
 
-- The same language model without Qloo: asked for a film, an artist and a show both would enjoy, it named 24 real titles (all exist in Qloo), but 0 of 24 sat in both people's own lists, and 10 of the 24 simply repeated one person's own favourite. None of its lunch restaurants was in both lists either.
-- One mixed Qloo call picked a film, artist or show outside one person's top 200 in 10 of 24 cases. The agent found a pick in both lists in 17 of 24 and said "take turns" in the other 7. When something was shared, the median worse rank was #62 for the agent vs #94 for the mixed call. For places the mixed call is often fine (#8.5 vs #15); we say so.
+- The same language model without Qloo: asked for a film, an artist and a show both would enjoy, it named 24 real titles (all exist in Qloo), but only 1 of 24 sat in both people's own lists, and 12 of the 24 simply repeated one person's own favourite back. Its lunch restaurants: 2 of 8 in both lists (the agent's: 8 of 8).
+- One mixed Qloo call picked a film, artist or show outside one person's top 200 in 10 of 24 cases. The agent found a pick in both lists in 17 of 24 and said "take turns" in the other 7. When something was shared, the median worse rank was #62 for the agent vs #94 for the mixed call. For places the mixed call is often fine (#7 vs #13); we say so.
 - Trot: none of Grandma's own top 10 artists carry Qloo's Trot tag; after the re-plan, 2 of 2 of her song picks do.
 - Lunch with a child, 8 pairs in 7 cities: picks carrying a Qloo alcohol tag went from 6 of 8 to 0 of 8, and all 8 still sit in both people's lists.
-- Model planner: on NVIDIA's free hosted endpoint the model chose 33 of 40 parts of the day (the rules finished the other 7 after empty or timed-out responses, and the page marks them); 43 of 56 picks show a model-written reason that passed the check; 15 sentences were rejected; median 110 s per plan.
+- Model planner: on NVIDIA's free hosted endpoint (through Meterless Nightshift) the model finished 7 of 8 plans itself (in one, an empty answer left one part to the rules, and the page marks it); 50 of 51 picks show a model-written reason that passed the check; 4 sentences were rejected and rewritten; median 77 s per plan.
 
 These are ranks in Qloo's lists, not a user study. We have not tested whether real families enjoyed the day.
 
@@ -92,8 +92,8 @@ qloo, nvidia-nemotron, meterless-nightshift, node.js, javascript, html, css, mcp
 ## Try it out links
 
 ```
-LIVE_DEMO_URL
-GITHUB_URL
+https://saturday-for-two.vercel.app
+https://github.com/jejuolledev/saturday-for-two
 ```
 
 ## Video demo link (optional for this hackathon)
@@ -105,13 +105,13 @@ VIDEO_URL
 ## Testing instructions (if asked)
 
 ```
-Open the live demo and press "Grandma & grandkid · Seoul", or type any two people. No login. The page says which planner made the plan (the language model, or the rule-based fallback). A new plan takes about 30 to 50 s with the rules (about 65 Qloo calls) and 45 to 150 s with the model (median 110 s, about 80 to 110 Qloo calls), paced under Qloo's 10-per-second limit; repeated requests come from a 6-hour server cache and are labelled. Locally: Node.js 20.6+, copy .env.example to .env.local with a Qloo hackathon key (and optionally LLM_BASE_URL / LLM_API_KEY / LLM_MODEL), run "npm run dev", open http://127.0.0.1:5173. "npm test" runs 17 offline tests including the agent loop with a scripted model; "npm run measure" re-runs the measurements.
+Open the live demo and press "Grandma & grandkid · Seoul", or type any two people. No login. The page says which planner made the plan (the language model, or the rule-based fallback). A new plan takes about 30 to 50 s with the rules (about 65 Qloo calls) and 50 to 155 s with the model (median 77 s, about 80 to 110 Qloo calls), paced under Qloo's 10-per-second limit; repeated requests come from a 6-hour server cache and are labelled. Locally: Node.js 20.6+, copy .env.example to .env.local with a Qloo hackathon key (and optionally LLM_BASE_URL / LLM_API_KEY / LLM_MODEL), run "npm run dev", open http://127.0.0.1:5173. "npm test" runs 17 offline tests including the agent loop with a scripted model; "npm run measure" re-runs the measurements.
 ```
 
 ## What is Qloo-powered (if asked)
 
 ```
-Everything that decides the plan: entity lookup (/search), genre lookup (/v2/tags), each person's own list per part of the day (/v2/insights with location, category tags, tag intersection, excluded bar and alcohol tags, Saturday hours, age band and content rating), the genre check (filter.tags + filter.results.entities), per-person scoring of every candidate (filter.results.entities), and the descriptions and tags shown. The language model only chooses among Qloo's results and explains; without Qloo it has nothing to choose from, and when we asked it alone, none of the 24 films, artists and shows it named was in both people's lists.
+Everything that decides the plan: entity lookup (/search), genre lookup (/v2/tags), each person's own list per part of the day (/v2/insights with location, category tags, tag intersection, excluded bar and alcohol tags, Saturday hours, age band and content rating), the genre check (filter.tags + filter.results.entities), per-person scoring of every candidate (filter.results.entities), and the descriptions and tags shown. The language model only chooses among Qloo's results and explains; without Qloo it has nothing to choose from, and when we asked it alone, only 1 of the 24 films, artists and shows it named was in both people's lists.
 ```
 
 ## Was this built during the submission period?

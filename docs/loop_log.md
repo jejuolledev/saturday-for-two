@@ -41,3 +41,9 @@ Changes:
 - Grounding check: Unicode hyphens normalised; tags and description words of the chosen picks allowed in the day summary (it was rejecting "Korean" and "Baby‑Sitters").
 - `POST /api/plan` with `"stream": false` returns one JSON plan (the partner API).
 - README: one first buyer (family day-out and travel apps), places-overlap caveat, fixed mismatches.
+
+Measured after loop 3 (final code, 28 Oct): the same model alone put 1 of 24 films/artists/shows in both people's lists and repeated a typed favourite 12 times; one mixed Qloo call was outside a person's list 10 of 24 times; the agent shared 17 of 24; a child's lunch with an alcohol tag 6 of 8 → 0 of 8; the model planner finished 7 of 8 plans itself (median 77 s). Every number in `docs/measurements.md`.
+
+Pre-deploy QA (fresh agent: real use, key exposure, overclaims, measurement reproduction): 2 🔴, 7 🟡, all fixed — when the model stopped early the rules skipped the genre re-plan (now the rules re-plan the parts the model left), degraded plans were cached for 6 hours (now 5 minutes), the planner label claimed the model planned when the rules had, oversized requests crashed the local server, timings and call counts understated, one wrong restaurant match noted, Node 20.6. Key: not in history, files, responses or the call log. All headline numbers reproduced from the raw run.
+
+Deployment: public repository and Vercel. Vercel first picked `public/app.js` as a server entrypoint (renamed to `main.js`, `framework: null`). With a teenager, lunch now also leaves out restaurants with alcohol tags (a Dad & teen plan had put an Irish pub first).
