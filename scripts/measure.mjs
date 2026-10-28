@@ -197,6 +197,9 @@ if (withLLM) {
   const agentMedia = ok.filter((r) => ['movie', 'music', 'evening'].includes(r.slot));
   const agentLunch = ok.filter((r) => r.slot === 'lunch');
   L.push('', `Films, artists, shows: the LLM alone named ${media.filter((r) => r.name).length}; ${media.filter((r) => r.found).length} were found in Qloo; **${media.filter((r) => r.inBoth).length} were in both people's lists**; median worse rank of those found: ${rt(median(media.filter((r) => r.found).map((r) => Math.max(r.ra, r.rb))), 200)}. The agent had a shared pick in ${agentMedia.filter((r) => r.shared).length} of ${agentMedia.length} of the same parts of the day and said "take turns" in the rest.`);
+  const normN = (x) => String(x || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+  const favRepeat = media.filter((r) => { const pr = PAIRS.find((p) => pairName(p) === r.pair); return r.name && [...pr.a.likes, ...pr.b.likes].some((l) => normN(l) === normN(r.name)); }).length;
+  L.push(`Of the ${media.filter((r) => r.name).length} films, artists and shows the LLM named alone, ${favRepeat} simply repeated one person's own typed favourite.`);
   L.push(`Lunch: the LLM alone named ${rest.filter((r) => r.name).length} restaurants; ${rest.filter((r) => r.found).length} found in Qloo in that city; ${rest.filter((r) => r.inBoth).length} in both people's lists. The agent's lunch was shared in ${agentLunch.filter((r) => r.shared).length} of ${agentLunch.length}.`, '');
   L.push('## 5. Model planner', '');
   L.push('Same Qloo tools as the rule-based planner. The model decides what to re-ask Qloo, chooses, and writes the sentences; each pick is validated against the comparison and each sentence is checked against Qloo\'s names, tags and ranks before it is shown.', '');

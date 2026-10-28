@@ -18,12 +18,12 @@ Live Qloo hackathon API, 8 fixed pairs × 5 parts of the day ([docs/measurements
 
 | What we compared | Result |
 |---|---|
-| **The same language model without Qloo**, asked for a film, an artist and a show both people would enjoy (each name then looked up in Qloo) | it named 24 real titles (all found in Qloo), but only **1 of 24** sat in both people's own lists; its lunch restaurants: **0 of 8** |
-| **One mixed Qloo call** (both people's favourites and age bands together, top result), films / artists / shows | outside one person's top 200 in **11 of 24** |
-| The agent, films / artists / shows | a pick in both lists in **15 of 24**; in the other 9 it says "take turns" instead of pretending |
-| The agent vs the mixed call when something is shared (median of the worse of the two ranks) | **#62 vs #100** (places: #8.5 vs #15; for places the mixed call is often fine, and we say so) |
+| **The same language model without Qloo**, asked for a film, an artist and a show both people would enjoy (each name then looked up in Qloo) | it named 24 real titles (all found in Qloo), but **0 of 24** sat in both people's own lists, and 10 of the 24 simply repeated one person's own favourite; its lunch restaurants: **0 of 7** |
+| **One mixed Qloo call** (both people's favourites and age bands together, top result), films / artists / shows | outside one person's top 200 in **10 of 24** |
+| The agent, films / artists / shows | a pick in both lists in **17 of 24**; in the other 7 it says "take turns" instead of pretending |
+| The agent vs the mixed call when something is shared (median of the worse of the two ranks) | **#62 vs #94** (places: #8.5 vs #15; for places the mixed call is often fine, and we say so) |
 | **Grandma's trot.** Her favourite (Lim Young-woong) is tagged *Trot* in Qloo, but 0 of her own top 10 artists are | the agent re-asks Qloo within the Trot genre; her song picks become artists Qloo tags Trot (**2 of 2**) |
-| **Lunch with a child.** Old filter (bars excluded) vs new (Qloo tag "good for kids", every alcohol tag excluded), 8 pairs in 7 cities | picks carrying an alcohol tag: **6 of 8 → 0 of 8**; all 8 new picks still in both people's lists |
+| **Lunch with a child.** Old filter (bars excluded) vs new (Qloo tag "good for kids", every alcohol tag excluded), 8 pairs in 7 cities | picks carrying an alcohol tag: **6 of 8 → 0 of 8**; all 8 new picks carry the "good for kids" tag and are still in both people's lists |
 
 What these numbers do **not** show: whether real families enjoyed the day. They show where each pick sits in Qloo's lists for each person. We have not run a user study.
 
@@ -67,11 +67,11 @@ favourites ──/search──▶ Qloo entities (+ their tags)
 - `choose(part, picks[{ref, kind, why}])`: picks by short reference from the latest comparison. Rejected if the reference is unknown, a "shared" pick is not in both lists, a turn is not from that person's top 20, or the item is already used elsewhere in the day.
 - `finish(summary)`.
 
-**The model cannot invent.** Every pick is a Qloo entity taken by reference. Every sentence the model writes goes through `lib/ground.mjs`: any number must be a rank or count in the data, any capitalised name or non-Latin name must be a Qloo name, tag or something the user typed, no internal references, no prices. A rejected sentence goes back to the model once or twice with the reason; if it still fails, a template sentence is shown instead. In the measured runs the check rejected 9 sentences across the 8 plans; 46 of 51 picks show the model's own sentence, the rest a template sentence.
+**The model cannot invent.** Every pick is a Qloo entity taken by reference. Every sentence the model writes goes through `lib/ground.mjs`: any number must be a rank or count in the data, any capitalised name or non-Latin name must be a Qloo name, tag or something the user typed, no internal references, no prices. A rejected sentence goes back to the model once or twice with the reason; if it still fails, a template sentence is shown instead. In the measured runs (8 plans) the check rejected 15 sentences; 43 of 56 picks show the model's own sentence, the rest a template sentence.
 
 **Which model.** Any OpenAI-compatible `/chat/completions` endpoint, set by three variables (`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`); switching provider is one change. We developed and measured with **NVIDIA Nemotron 3.5 Lightning** through **Meterless Nightshift** on a Mac (Nightshift routes it to NVIDIA's hosted endpoint), and the hosted demo uses whatever model its three variables point to (the page names the model and provider on every plan). With no model configured the same tools run under fixed rules (same checks and re-plans, template sentences), and the page says which planner made the plan.
 
-**Why not let the model do everything?** We measured that too: the same model asked directly named films, artists and shows that sat in both people's lists only 1 time in 24 (its restaurants: 0 of 8). The model is good at reading the checks, choosing between close candidates and saying the trade-off in plain words; Qloo is what knows whether anything is actually shared.
+**Why not let the model do everything?** We measured that too: the same model asked directly named films, artists and shows that sat in both people's lists 0 times in 24 (its restaurants: 0 of 7), and 10 times it just repeated one person's own favourite back. The model is good at reading the checks, choosing between close candidates and saying the trade-off in plain words; Qloo is what knows whether anything is actually shared.
 
 ### Use it from your own agent (MCP)
 
@@ -97,7 +97,7 @@ MEASURE_LLM=1 npm run measure    # also the LLM-only baseline and the model plan
 
 ## Hosting
 
-Static page (`public/`) plus one serverless function (`api/plan.js`) that streams newline-delimited JSON, so it runs on Vercel's free tier (`vercel.json` allows the function 300 s; a plan takes about 15 s with the rule-based planner and MODEL_TIME with the model on a free hosted endpoint). Environment variables: `QLOO_API_URL`, `QLOO_API_KEY`, and optionally `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`. `npm start` runs it on any Node host (`HOST=0.0.0.0`).
+Static page (`public/`) plus one serverless function (`api/plan.js`) that streams newline-delimited JSON, so it runs on Vercel's free tier (`vercel.json` allows the function 300 s; a plan takes about 15 to 35 s with the rule-based planner and 45 to 150 s (median 110 s) with the model on a free hosted endpoint). Environment variables: `QLOO_API_URL`, `QLOO_API_KEY`, and optionally `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`. `npm start` runs it on any Node host (`HOST=0.0.0.0`).
 
 The keys stay on the server: the browser only talks to `/api/plan`, and the call log on the page has no key in it. To protect the shared quota (50,000 Qloo calls a month on a hackathon key) the server caches Qloo responses and finished plans for 6 hours (cached plans are labelled), allows 6 new plans per connection per 10 minutes and 200 a day per server instance (`PLANS_PER_DAY`). These limits are in memory, so per instance.
 

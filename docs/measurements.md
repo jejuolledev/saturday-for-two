@@ -1,6 +1,6 @@
 # Measurements
 
-Run: 2026-10-27T22:31:09.241Z · 8 fixed pairs × 5 parts of the day · live Qloo hackathon API · fresh cache per pair. Re-run: `npm run measure` (add `MEASURE_LLM=1` and an LLM endpoint for sections 4 and 5).
+Run: 2026-10-28T03:05:14.411Z · 8 fixed pairs × 5 parts of the day · live Qloo hackathon API · fresh cache per pair. Re-run: `npm run measure` (add `MEASURE_LLM=1` and an LLM endpoint for sections 4 and 5).
 
 These numbers say where each pick sits in Qloo's own taste lists for both people. They do not measure whether real people enjoyed the day; that has not been tested.
 
@@ -11,14 +11,14 @@ For each part of the day the agent fetches each person's own Qloo list (top 100 
 | | Places (outing + lunch) | Films, artists, shows |
 |---|---|---|
 | Parts of the day planned | 16 | 24 |
-| …with a shared pick (in both lists) | 16 (100%) | 15 (63%) |
-| …where the plan takes turns instead | 0 | 9 |
-| Mixed call: top pick is outside at least one person's list | 1 of 16 | 11 of 24 |
+| …with a shared pick (in both lists) | 16 (100%) | 17 (71%) |
+| …where the plan takes turns instead | 0 | 7 |
+| Mixed call: top pick is outside at least one person's list | 1 of 16 | 10 of 24 |
 | When shared: median worse rank, agent pick | 8.5 | 62 |
-| When shared: median worse rank, mixed-call pick (outside = list length + 1) | 15 | 100 |
-| When shared: mixed call picked the same item | 9 of 16 | 9 of 15 |
+| When shared: median worse rank, mixed-call pick (outside = list length + 1) | 15 | 94 |
+| When shared: mixed call picked the same item | 9 of 16 | 9 of 17 |
 
-Speed (rule-based planner): median 15.7 s and 62.5 Qloo calls per plan.
+Speed (rule-based planner): median 33.8 s and 63.5 Qloo calls per plan.
 
 ## 2. A favourite's music genre (the trot problem)
 
@@ -26,17 +26,27 @@ For every person whose favourite carries a Qloo music genre: how many of their o
 
 | Pair | Person | Favourite → Qloo genre | Top 10 in genre, first pass | Re-planned | Their song picks in genre |
 |---|---|---|---|---|---|
-| Lim Young-woong × Minecraft+Pokémon | Grandma | Lim Young-woong → Trot | 0 of 10 | yes | 2 of 2 |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | Grandma | Lim Young-woong + Reply 1988 → Trot | 0 of 10 | yes | 2 of 2 |
 | Metallica+The Godfather × Olivia Rodrigo+Stranger Things | Dad | Metallica + The Godfather → Hard Rock/Thrash Metal/Heavy Metal | 7 of 10 | no | 1 of 2 |
 | Metallica+The Godfather × Olivia Rodrigo+Stranger Things | Daughter | Olivia Rodrigo + Stranger Things → Pop - Rock/Rock/Indie Pop | 1 of 10 | yes | 2 of 2 |
 | Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | Roommate 1 | Radiohead + The Grand Budapest Hotel → Electronic/Indie/Alternative Rock | 8 of 10 | no | 1 of 2 |
-| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | Roommate 2 | Bad Bunny + Fast & Furious → Latin Pop/Puerto Rican | 2 of 10 | yes | 1 of 1 |
+| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | Roommate 2 | Bad Bunny + Fast & Furious → Latin Pop/Puerto Rican | 2 of 10 | yes | 2 of 2 |
 | Frank Sinatra+Casablanca × Bluey+Frozen | Grandpa | Frank Sinatra + Casablanca → Jazz/Oldies/Vocal Jazz | 10 of 10 | no | 2 of 2 |
 | Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | Mom | Taylor Swift + Gilmore Girls → Country Pop/American Folk | 0 of 10 | yes | 2 of 2 |
 | BTS+Squid Game × Pink Floyd+Star Wars | Partner 1 | BTS + Squid Game → Korean/K Pop/Kpop | 10 of 10 | no | 2 of 2 |
-| BTS+Squid Game × Pink Floyd+Star Wars | Partner 2 | Pink Floyd + Star Wars → Psychedelic/Rock/Psychedelic Rock | 9 of 10 | no | 1 of 1 |
+| BTS+Squid Game × Pink Floyd+Star Wars | Partner 2 | Pink Floyd + Star Wars → Psychedelic/Rock/Psychedelic Rock | 9 of 10 | no | 2 of 2 |
 | Adele+Downton Abbey × Travis Scott+Call of Duty | Aunt | Adele + Downton Abbey → Indie/Singer & Songwriter/British | 8 of 10 | no | 1 of 2 |
-| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | Grandma | Elvis Presley + The Sound of Music → Oldies/Rock/Classic Rock | 10 of 10 | no | 2 of 2 |
+| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | Grandma | Elvis Presley + The Sound of Music → Oldies/Rock/Classic Rock | 10 of 10 | no | 3 of 3 |
+
+## 2b. Songs with a child in the car
+
+Qloo has no lyric rating for artists. With a child along, the youngest person's artists come only from those Qloo tags family-friendly (`urn:tag:audience:qloo:family_friendly`, `urn:tag:style:qloo:family_friendly`). Below: their own top 10 with no filter, and their song picks now.
+
+| Pair | Person | Own top 3, no filter | Own top 10 tagged family-friendly | Their song picks now | …tagged family-friendly |
+|---|---|---|---|---|---|
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | Grandkid | Quadeca, XXXTENTACION, bbno$ | 0 of 10 | Cimorelli, Jonas Brothers | 2 of 2 |
+| Frank Sinatra+Casablanca × Bluey+Frozen | Grandkid | Vance Joy, Birdy, Gabrielle Aplin | 0 of 10 | Pat Boone, Disney Characters | 2 of 2 |
+| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | Grandson | d4vd, Panic! at the Disco, Chase Atlantic | 0 of 10 | John Denver, B.J. Thomas, Gene Autry | 3 of 3 |
 
 ## 3. Lunch with a child (the alcohol problem)
 
@@ -61,41 +71,42 @@ Model: nvidia/nemotron-3.5-lightning-30b-a3b via Meterless Nightshift (this Mac)
 
 | Pair | Kind | LLM named | Found in Qloo as | Rank A | Rank B | In both lists? | Agent pick (worse rank) |
 |---|---|---|---|---|---|---|---|
-| Lim Young-woong × Minecraft+Pokémon | film | Coco | Coco | #139 | #15 | yes | Sgt. Stubby: An American Hero (#42) |
-| Lim Young-woong × Minecraft+Pokémon | artist | Yiruma | Yiruma | outside top 200 | outside top 200 | no | 홍진영 (take turns) |
-| Lim Young-woong × Minecraft+Pokémon | tv_show | Running Man | Running Man | outside top 200 | outside top 200 | no | The Baby-Sitters Club (#62) |
-| Lim Young-woong × Minecraft+Pokémon | restaurant | Tosokchon Samgyetang | Tosokchon Samgyetang | outside top 100 | outside top 100 | no | Sedorak (#7) |
-| Metallica+The Godfather × Olivia Rodrigo+Stranger Things | film | The Goonies | The Goonies | outside top 200 | outside top 200 | no | Split (#145) |
-| Metallica+The Godfather × Olivia Rodrigo+Stranger Things | artist | Foo Fighters | Foo Fighters | #103 | outside top 200 | no | The Cure (#147) |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | film | The Little Prince | The Little Prince | outside top 200 | outside top 200 | no | Coco (#45) |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | artist | Lim Young-woong | Lim Young Woong | outside top 200 | #16 | no | 노라조 (take turns) |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | tv_show | Reply 1988 | Reply 1988 | outside top 200 | outside top 200 | no | The Baby-Sitters Club (#62) |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | restaurant | Tosokchon Samgyetang | Tosokchon Samgyetang | outside top 100 | outside top 100 | no | Sedorak (#7) |
+| Metallica+The Godfather × Olivia Rodrigo+Stranger Things | film | The Godfather | The Godfather | outside top 200 | outside top 200 | no | Split (#145) |
+| Metallica+The Godfather × Olivia Rodrigo+Stranger Things | artist | Queen | Queen | outside top 200 | outside top 200 | no | The Cure (#147) |
 | Metallica+The Godfather × Olivia Rodrigo+Stranger Things | tv_show | Stranger Things | Stranger Things | outside top 200 | outside top 200 | no | Raising Dion (#55) |
 | Metallica+The Godfather × Olivia Rodrigo+Stranger Things | restaurant | Katz's Delicatessen | Katz's Delicatessen | outside top 100 | outside top 100 | no | Niall's on 52nd (#17) |
-| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | film | Guardians of the Galaxy | Guardians of the Galaxy | outside top 200 | outside top 200 | no | Whiplash (take turns) |
+| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | film | The Grand Budapest Hotel | The Grand Budapest Hotel | outside top 200 | outside top 200 | no | Whiplash (take turns) |
 | Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | artist | David Bowie | David Bowie | outside top 200 | outside top 200 | no | Muse (take turns) |
-| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | tv_show | Black Mirror | Black Mirror | outside top 200 | outside top 200 | no | Gyeongseong Creature (#49) |
-| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | restaurant | Dishoom | Dishoom King's Cross | outside top 100 | outside top 100 | no | Ku Bar (#26) |
+| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | tv_show | Stranger Things | Stranger Things | outside top 200 | outside top 200 | no | Gyeongseong Creature (#49) |
+| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | restaurant | Dishoom Covent Garden | Dishoom Covent Garden | outside top 100 | outside top 100 | no | Ku Bar (#26) |
 | Frank Sinatra+Casablanca × Bluey+Frozen | film | The Lion King | The Lion King | #58 | outside top 200 | no | The Lego Movie (#110) |
-| Frank Sinatra+Casablanca × Bluey+Frozen | artist | Elton John | Elton John | #131 | outside top 200 | no | Nina Simone (take turns) |
-| Frank Sinatra+Casablanca × Bluey+Frozen | tv_show | The Muppet Show | The Muppet Show | outside top 200 | outside top 200 | no | Little House on the Prairie (#129) |
+| Frank Sinatra+Casablanca × Bluey+Frozen | artist | Michael Bublé | Michael Bublé | outside top 200 | #10 | no | Pat Boone (#149) |
+| Frank Sinatra+Casablanca × Bluey+Frozen | tv_show | Sesame Street | Sesame Street | outside top 200 | outside top 200 | no | Little House on the Prairie (#129) |
 | Frank Sinatra+Casablanca × Bluey+Frozen | restaurant | Lou Malnati's Pizzeria | Lou Malnati's Pizzeria | outside top 100 | outside top 100 | no | Al's #1 Italian Beef (#28) |
-| Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | film | Spider-Man: Into the Spider-Verse | Spider-Man: Into the Spider-Verse | outside top 200 | #7 | no | Pitch Perfect 3 (take turns) |
+| Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | film | Spider-Man: Across the Spider-Verse | Spider-Man: Across the Spider-Verse | outside top 200 | #40 | no | Pitch Perfect 3 (take turns) |
 | Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | artist | Taylor Swift | Taylor Swift | #74 | outside top 200 | no | Sam Hunt (take turns) |
-| Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | tv_show | Stranger Things | Stranger Things | outside top 200 | outside top 200 | no | The Baker and the Beauty (#78) |
-| Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | restaurant | In-N-Out Burger | In-N-Out Burger | outside top 100 | #4 | no | In-N-Out Burger (#10) |
-| BTS+Squid Game × Pink Floyd+Star Wars | film | The Matrix | The Matrix | outside top 200 | outside top 200 | no | Maze Runner: The Death Cure (#7) |
-| BTS+Squid Game × Pink Floyd+Star Wars | artist | David Bowie | David Bowie | outside top 200 | outside top 200 | no | Stray Kids (take turns) |
+| Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | tv_show | Gilmore Girls | Gilmore Girls | outside top 200 | outside top 200 | no | The Baker and the Beauty (#78) |
+| Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | restaurant | null | not found | — | — | — | — |
+| BTS+Squid Game × Pink Floyd+Star Wars | film | Inception | Inception | outside top 200 | outside top 200 | no | Maze Runner: The Death Cure (#7) |
+| BTS+Squid Game × Pink Floyd+Star Wars | artist | Pink Floyd | Pink Floyd | outside top 200 | outside top 200 | no | Stray Kids (take turns) |
 | BTS+Squid Game × Pink Floyd+Star Wars | tv_show | Stranger Things | Stranger Things | outside top 200 | outside top 200 | no | Suspicious Partner (#38) |
-| BTS+Squid Game × Pink Floyd+Star Wars | restaurant | Ichiran Ramen | Ichiran Ramen Dotonbori - Main Building | outside top 100 | outside top 100 | no | Sushikuni (#31) |
-| Adele+Downton Abbey × Travis Scott+Call of Duty | film | Skyfall | Skyfall | outside top 200 | outside top 200 | no | Marriage Story (#177) |
+| BTS+Squid Game × Pink Floyd+Star Wars | restaurant | Tsuta | Tsutaya Books Daikanyama | outside top 100 | outside top 100 | no | Sushikuni (#31) |
+| Adele+Downton Abbey × Travis Scott+Call of Duty | film | Guardians of the Galaxy | Guardians of the Galaxy | outside top 200 | #116 | no | Marriage Story (#177) |
 | Adele+Downton Abbey × Travis Scott+Call of Duty | artist | Ed Sheeran | Ed Sheeran | outside top 200 | outside top 200 | no | Take That (take turns) |
-| Adele+Downton Abbey × Travis Scott+Call of Duty | tv_show | Peaky Blinders | Peaky Blinders | outside top 200 | outside top 200 | no | Council of Dads (#35) |
-| Adele+Downton Abbey × Travis Scott+Call of Duty | restaurant | Rules | Rules | outside top 100 | outside top 100 | no | Sea Containers Restaurant (#14) |
+| Adele+Downton Abbey × Travis Scott+Call of Duty | tv_show | Stranger Things | Stranger Things | outside top 200 | outside top 200 | no | Council of Dads (#35) |
+| Adele+Downton Abbey × Travis Scott+Call of Duty | restaurant | Dishoom Shoreditch | Dishoom Shoreditch | outside top 100 | outside top 100 | no | Sea Containers Restaurant (#14) |
 | Elvis Presley+The Sound of Music × MrBeast+Spider-Man | film | The Sound of Music | The Sound of Music | outside top 200 | outside top 200 | no | Top Gun (#80) |
-| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | artist | Elvis Presley | Elvis Presley | outside top 200 | outside top 200 | no | Elton John (take turns) |
-| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | tv_show | The Muppet Show | The Muppet Show | outside top 200 | outside top 200 | no | Big Shot (#12) |
-| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | restaurant | Le Relais de l'Entrecôte | Le Relais de l'Entrecôte | #29 | outside top 100 | no | McDonald's (#5) |
+| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | artist | Elvis Presley | Elvis Presley | outside top 200 | #8 | no | John Denver (#19) |
+| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | tv_show | The Great British Bake Off | The Great British Baking Show | outside top 200 | outside top 200 | no | Big Shot (#12) |
+| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | restaurant | Le Procope | Le Procope | #1 | outside top 100 | no | McDonald's (#5) |
 
-Films, artists, shows: the LLM alone named 24; 24 were found in Qloo; **1 were in both people's lists**; median worse rank of those found: outside top 200. The agent had a shared pick in 15 of 24 of the same parts of the day and said "take turns" in the rest.
-Lunch: the LLM alone named 8 restaurants; 8 found in Qloo in that city; 0 in both people's lists. The agent's lunch was shared in 8 of 8.
+Films, artists, shows: the LLM alone named 24; 24 were found in Qloo; **0 were in both people's lists**; median worse rank of those found: outside top 200. The agent had a shared pick in 17 of 24 of the same parts of the day and said "take turns" in the rest.
+Of the 24 films, artists and shows the LLM named alone, 10 simply repeated one person's own typed favourite.
+Lunch: the LLM alone named 7 restaurants; 7 found in Qloo in that city; 0 in both people's lists. The agent's lunch was shared in 8 of 8.
 
 ## 5. Model planner
 
@@ -103,26 +114,26 @@ Same Qloo tools as the rule-based planner. The model decides what to re-ask Qloo
 
 | Pair | Completed by the model | Re-plans | Sentences shown from the model / all picks | Sentences rejected by the check | Day summary | Same first pick as rules (of 5) | Time | Songs |
 |---|---|---|---|---|---|---|---|---|
-| Lim Young-woong × Minecraft+Pokémon | no (model did not choose every part; rules finished movie) | 1 | 5 / 6 | 2 | template | 4 | 52 s | 노라조, Quadeca |
-| Metallica+The Godfather × Olivia Rodrigo+Stranger Things | yes | 1 | 6 / 6 | 1 | model | 4 | 130 s | Black Sabbath, Harry Styles |
-| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | no (choose morning: model endpoint: /nemotron-3.5-lightning-30b-a3b_empty_response; rules finished morning) | 1 | 6 / 7 | 1 | model | 5 | 115 s | Muse, Maluma |
-| Frank Sinatra+Casablanca × Bluey+Frozen | no (choose evening: model endpoint: /nemotron-3.5-lightning-30b-a3b_empty_response; rules finished evening) | 1 | 6 / 7 | 1 | template | 4 | 150 s | Louis Armstrong, Vance Joy, Peggy Lee |
-| Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | yes | 3 | 7 / 7 | 1 | model | 3 | 50 s | Danielle Bradbery, Don Toliver |
-| BTS+Squid Game × Pink Floyd+Star Wars | no (re-plan: model endpoint: /nemotron-3.5-lightning-30b-a3b_empty_response; rules finished evening) | 0 | 5 / 6 | 1 | template | 4 | 150 s | TWICE, Rainbow |
-| Adele+Downton Abbey × Travis Scott+Call of Duty | yes | 1 | 6 / 6 | 1 | model | 4 | 69 s | Dido, Kodak Black |
-| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | no (model did not choose every part; rules finished lunch) | 1 | 5 / 6 | 1 | model | 4 | 60 s | Don McLean, d4vd |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | yes | 1 | 6 / 6 | 0 | model | 5 | 45 s | 노라조, Cimorelli |
+| Metallica+The Godfather × Olivia Rodrigo+Stranger Things | no (model did not choose every part; rules finished lunch) | 1 | 3 / 7 | 10 | model | 4 | 83 s | Black Sabbath, Harry Styles, Deep Purple |
+| Radiohead+The Grand Budapest Hotel × Bad Bunny+Fast & Furious | no (choose morning: model endpoint: /nemotron-3.5-lightning-30b-a3b_empty_response; rules finished morning) | 1 | 6 / 7 | 3 | model | 5 | 136 s | Muse, Maluma |
+| Frank Sinatra+Casablanca × Bluey+Frozen | yes | 0 | 7 / 7 | 0 | model | 5 | 65 s | Pat Boone, Louis Armstrong, Sheppard |
+| Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | yes | 1 | 8 / 8 | 2 | template | 3 | 66 s | Danielle Bradbery, Don Toliver, Sam Hunt |
+| BTS+Squid Game × Pink Floyd+Star Wars | no (re-plan: This operation was aborted; rules finished morning, music, evening) | 0 | 2 / 8 | 0 | template | 5 | 151 s | Stray Kids, Audioslave, Red Velvet, Slash |
+| Adele+Downton Abbey × Travis Scott+Call of Duty | no (model did not choose every part; rules finished morning) | 0 | 5 / 6 | 0 | template | 4 | 151 s | Dido, Kodak Black |
+| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | no (choose evening: model endpoint: /nemotron-3.5-lightning-30b-a3b_empty_response; rules finished evening) | 0 | 6 / 7 | 0 | template | 5 | 149 s | John Denver, B.J. Thomas, Pat Boone |
 
-Model planner: completed 3 of 8; median 92 s per plan.
+Model planner: completed 3 of 8; median 110 s per plan.
 
 ## Per pair (rule-based planner)
 
 | Pair | Part of day | In both lists | Shared pick? | Agent worse rank | Mixed-call worse rank | Re-planned |
 |---|---|---|---|---|---|---|
-| Lim Young-woong × Minecraft+Pokémon | morning | 41 of top 100 | yes | #3 | #33 |  |
-| Lim Young-woong × Minecraft+Pokémon | lunch | 44 of top 100 | yes | #7 | #9 |  |
-| Lim Young-woong × Minecraft+Pokémon | movie | 34 of top 200 | yes | #42 | #196 |  |
-| Lim Young-woong × Minecraft+Pokémon | music | 0 of top 200 | no, take turns | — | outside top 200 | yes |
-| Lim Young-woong × Minecraft+Pokémon | evening | 4 of top 200 | yes | #62 | outside top 200 |  |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | morning | 41 of top 100 | yes | #3 | #27 |  |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | lunch | 44 of top 100 | yes | #7 | #10 |  |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | movie | 39 of top 200 | yes | #45 | #77 |  |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | music | 0 of top 200 | no, take turns | — | outside top 200 | yes |
+| Lim Young-woong+Reply 1988 × Minecraft+Pokémon | evening | 3 of top 200 | yes | #62 | #94 |  |
 | Metallica+The Godfather × Olivia Rodrigo+Stranger Things | morning | 24 of top 100 | yes | #5 | #25 |  |
 | Metallica+The Godfather × Olivia Rodrigo+Stranger Things | lunch | 8 of top 100 | yes | #17 | #21 |  |
 | Metallica+The Godfather × Olivia Rodrigo+Stranger Things | movie | 1 of top 200 | yes | #145 | #145 |  |
@@ -136,7 +147,7 @@ Model planner: completed 3 of 8; median 92 s per plan.
 | Frank Sinatra+Casablanca × Bluey+Frozen | morning | 79 of top 100 | yes | #1 | #1 |  |
 | Frank Sinatra+Casablanca × Bluey+Frozen | lunch | 22 of top 100 | yes | #28 | #28 |  |
 | Frank Sinatra+Casablanca × Bluey+Frozen | movie | 7 of top 200 | yes | #110 | #115 |  |
-| Frank Sinatra+Casablanca × Bluey+Frozen | music | 0 of top 200 | no, take turns | — | outside top 200 |  |
+| Frank Sinatra+Casablanca × Bluey+Frozen | music | 1 of top 200 | yes | #149 | outside top 200 |  |
 | Frank Sinatra+Casablanca × Bluey+Frozen | evening | 6 of top 200 | yes | #129 | #152 |  |
 | Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | morning | 49 of top 100 | yes | #16 | #16 |  |
 | Taylor Swift+Gilmore Girls × Fortnite+Spider-Man | lunch | 7 of top 100 | yes | #10 | #10 |  |
@@ -156,5 +167,5 @@ Model planner: completed 3 of 8; median 92 s per plan.
 | Elvis Presley+The Sound of Music × MrBeast+Spider-Man | morning | 58 of top 100 | yes | #7 | #32 |  |
 | Elvis Presley+The Sound of Music × MrBeast+Spider-Man | lunch | 62 of top 100 | yes | #5 | #5 |  |
 | Elvis Presley+The Sound of Music × MrBeast+Spider-Man | movie | 6 of top 200 | yes | #80 | #80 |  |
-| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | music | 0 of top 200 | no, take turns | — | outside top 200 |  |
+| Elvis Presley+The Sound of Music × MrBeast+Spider-Man | music | 5 of top 200 | yes | #19 | outside top 200 |  |
 | Elvis Presley+The Sound of Music × MrBeast+Spider-Man | evening | 10 of top 200 | yes | #12 | #12 |  |
