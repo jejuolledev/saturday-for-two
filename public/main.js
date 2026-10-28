@@ -133,6 +133,7 @@ function render(plan) {
   for (const s of plan.slots) {
     if (s.replanned) did.push(`<li><b>${esc(s.slot.title)}:</b> ${esc((s.replanned.before.checks[0] || s.replanned.reason || 'a check failed'))} → re-asked Qloo (${esc(s.lists.a)} / ${esc(s.lists.b)}).</li>`);
     if (s.lunchFilter === 'kids') did.push(`<li><b>Lunch:</b> a child is coming → only restaurants Qloo tags good for kids, with no alcohol tags.</li>`);
+    if (s.lunchFilter === 'no_alcohol') did.push(`<li><b>Lunch:</b> ${plan.audience === 'teen' ? 'a teenager is coming' : 'too few kid-tagged places'} → only restaurants with no Qloo alcohol tags.</li>`);
     if (s.lists && /family-friendly/.test(`${s.lists.a} ${s.lists.b}`)) did.push(`<li><b>Songs:</b> a child is in the car → the youngest person's artists come only from ones Qloo tags family-friendly.</li>`);
   }
   const al = plan.slots.filter((s) => s.alone && ['movie', 'music', 'evening'].includes(s.slot.id));
@@ -154,8 +155,8 @@ function render(plan) {
     const rp = s.replanned;
     const replan = rp ? `<div class="replan"><p class="replan-h">The agent re-planned this</p>
       <p>${rp.before.checks.map(esc).join(' ') || esc(rp.reason)}</p>
-      <div class="ba"><div><span class="lab">First pass · ${esc(rp.before.lists.a)}</span>${rp.before.topA.map((n) => `<span class="tag strike">${esc(n)}</span>`).join(' ')}</div>
-      <div><span class="lab">Re-asked Qloo · ${esc(rp.after.lists.a)}</span>${rp.after.topA.map((n) => `<span class="tag ta">${esc(n)}</span>`).join(' ')}</div></div>
+      ${rp.after.lists.a !== rp.before.lists.a || rp.after.lists.b === rp.before.lists.b ? `<div class="ba"><div><span class="lab">First pass · ${esc(rp.before.lists.a)}</span>${rp.before.topA.map((n) => `<span class="tag strike">${esc(n)}</span>`).join(' ')}</div>
+      <div><span class="lab">Re-asked Qloo · ${esc(rp.after.lists.a)}</span>${rp.after.topA.map((n) => `<span class="tag ta">${esc(n)}</span>`).join(' ')}</div></div>` : ''}
       ${rp.after.lists.b !== rp.before.lists.b ? `<div class="ba"><div><span class="lab">First pass · ${esc(rp.before.lists.b)}</span>${rp.before.topB.map((n) => `<span class="tag strike">${esc(n)}</span>`).join(' ')}</div><div><span class="lab">Re-asked Qloo · ${esc(rp.after.lists.b)}</span>${rp.after.topB.map((n) => `<span class="tag tb">${esc(n)}</span>`).join(' ')}</div></div>` : ''}</div>` : '';
     const al = s.alone;
     const alone = al ? `<p class="alone">Asked alone, without Qloo, the model said <b>${esc(al.said)}</b>${al.found ? `: ${rank(al.ra, al.depth)} for ${esc(A)}, ${rank(al.rb, al.depth)} for ${esc(B)}${al.ra <= al.depth && al.rb <= al.depth ? ' (in both lists: here the model alone agrees)' : ''}${al.favouriteOf ? ` (it simply repeated ${esc(poss(al.favouriteOf))} own favourite)` : ''}` : ' (not found in Qloo)'}.</p>` : '';

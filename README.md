@@ -59,6 +59,7 @@ favourites ──/search──▶ Qloo entities (+ their tags)
 
 - `compare(part, genre_a?, genre_b?, lunch_filter?)`: each person's own list for that part of the day (`/v2/insights` with `filter.location.query`, place category tags, `filter.hours=Saturday`, `signal.demographics.age`, `filter.content_rating` for a child or teenager, bars excluded with anyone under 18), a pool of at most 50 candidates (items in both lists first), every candidate scored for each person with `filter.results.entities` and placed inside that person's own list, the mixed-call pick for comparison, and **checks**:
   - *genre*: the favourite's Qloo genre (artist tags, or a category such as "Trot Singers" resolved with `/v2/tags`) is tested against the person's own top 10 with `filter.tags` + `filter.results.entities` in one call. 2 or fewer of 10 → re-plan within that genre.
+  - *teen lunch*: with a teenager, restaurants with no Qloo alcohol tags.
   - *kids' lunch*: with a child, lunch is restaurants Qloo tags **good for kids** (tag intersection) with every alcohol tag excluded (alcohol, beer, wine, cocktails, hard liquor, full bar, happy-hour drinks …). Fewer than 20 → widen to "no alcohol tags".
   - *songs with a child*: Qloo has no lyric rating for artists, so with a child along the youngest person's artists come only from those Qloo tags family-friendly (fewer than 3 → their own list, and the plan says so).
   - *no overlap*: nothing in both lists → take turns (two each for songs).
