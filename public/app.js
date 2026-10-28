@@ -124,7 +124,9 @@ function render(plan) {
   sub += ` ${plan.stats.qlooCalls} Qloo calls${plan.fromCache ? ' (shown from the server cache)' : `, ${(plan.stats.ms / 1000).toFixed(1)} s`}.`;
   $('#result-sub').textContent = sub;
   const pl = plan.planner || {};
-  $('#planner').innerHTML = pl.kind === 'model'
+  $('#planner').innerHTML = pl.kind === 'model' && (pl.ruleParts?.length || 0) >= 5
+    ? `<b>Rule-based planner</b>: the model (${esc(pl.model)}) did not answer this time${pl.error ? ` (${esc(String(pl.error).slice(0, 80))})` : ''}, so fixed rules made every choice, with template sentences.`
+    : pl.kind === 'model'
     ? `<b>Planned by ${esc(pl.model)}</b> via ${esc(pl.provider)}: it chose what to re-ask Qloo (${pl.replans || 0} re-plan${pl.replans === 1 ? '' : 's'}), picked, and wrote the reasons. Every pick is a Qloo entity; every sentence was checked against Qloo's data (${pl.rejectedWhy || 0} rejected and rewritten or replaced).${pl.ruleParts?.length ? ` The rule-based planner finished: ${esc(pl.ruleParts.join(', '))}.` : ''}`
     : '<b>Rule-based planner</b> (no language model configured on this server): the same Qloo tools and checks, fixed rules for re-planning, template sentences.';
   const did = [];

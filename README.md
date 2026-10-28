@@ -18,7 +18,7 @@ Live Qloo hackathon API, 8 fixed pairs × 5 parts of the day ([docs/measurements
 
 | What we compared | Result |
 |---|---|
-| **The same language model without Qloo**, asked for a film, an artist and a show both people would enjoy (each name then looked up in Qloo) | it named 24 real titles (all found in Qloo), but **0 of 24** sat in both people's own lists, and 10 of the 24 simply repeated one person's own favourite; its lunch restaurants: **0 of 7** |
+| **The same language model without Qloo**, asked for a film, an artist and a show both people would enjoy (each name then looked up in Qloo) | it named 24 real titles (all found in Qloo), but **0 of 24** sat in both people's own lists, and 10 of the 24 simply repeated one person's own favourite; its lunch restaurants: **none** in both lists |
 | **One mixed Qloo call** (both people's favourites and age bands together, top result), films / artists / shows | outside one person's top 200 in **10 of 24** |
 | The agent, films / artists / shows | a pick in both lists in **17 of 24**; in the other 7 it says "take turns" instead of pretending |
 | The agent vs the mixed call when something is shared (median of the worse of the two ranks) | **#62 vs #94** (places: #8.5 vs #15; for places the mixed call is often fine, and we say so) |
@@ -71,7 +71,7 @@ favourites ──/search──▶ Qloo entities (+ their tags)
 
 **Which model.** Any OpenAI-compatible `/chat/completions` endpoint, set by three variables (`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`); switching provider is one change. We developed and measured with **NVIDIA Nemotron 3.5 Lightning** through **Meterless Nightshift** on a Mac (Nightshift routes it to NVIDIA's hosted endpoint), and the hosted demo uses whatever model its three variables point to (the page names the model and provider on every plan). With no model configured the same tools run under fixed rules (same checks and re-plans, template sentences), and the page says which planner made the plan.
 
-**Why not let the model do everything?** We measured that too: the same model asked directly named films, artists and shows that sat in both people's lists 0 times in 24 (its restaurants: 0 of 7), and 10 times it just repeated one person's own favourite back. The model is good at reading the checks, choosing between close candidates and saying the trade-off in plain words; Qloo is what knows whether anything is actually shared.
+**Why not let the model do everything?** We measured that too: the same model asked directly named films, artists and shows that sat in both people's lists 0 times in 24 (its restaurants: none), and 10 times it just repeated one person's own favourite back. The model is good at reading the checks, choosing between close candidates and saying the trade-off in plain words; Qloo is what knows whether anything is actually shared.
 
 ### Use it from your own agent (MCP)
 
@@ -85,7 +85,7 @@ It returns a short text plan plus the full JSON (ranks, re-plans, the mixed-call
 
 ## Run it locally
 
-Node.js 20 or newer and a Qloo hackathon key. No `npm install` (no dependencies).
+Node.js 20.6 or newer and a Qloo hackathon key. No `npm install` (no dependencies).
 
 ```sh
 cp .env.example .env.local      # Qloo key; optionally LLM_BASE_URL / LLM_API_KEY / LLM_MODEL
@@ -97,7 +97,7 @@ MEASURE_LLM=1 npm run measure    # also the LLM-only baseline and the model plan
 
 ## Hosting
 
-Static page (`public/`) plus one serverless function (`api/plan.js`) that streams newline-delimited JSON, so it runs on Vercel's free tier (`vercel.json` allows the function 300 s; a plan takes about 15 to 35 s with the rule-based planner and 45 to 150 s (median 110 s) with the model on a free hosted endpoint). Environment variables: `QLOO_API_URL`, `QLOO_API_KEY`, and optionally `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`. `npm start` runs it on any Node host (`HOST=0.0.0.0`).
+Static page (`public/`) plus one serverless function (`api/plan.js`) that streams newline-delimited JSON, so it runs on Vercel's free tier (`vercel.json` allows the function 300 s; a plan takes about 30 to 50 s with the rule-based planner (Qloo pacing; about 65 calls) and 45 to 150 s (median 110 s, about 80 to 110 Qloo calls) with the model on a free hosted endpoint). Environment variables: `QLOO_API_URL`, `QLOO_API_KEY`, and optionally `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`. `npm start` runs it on any Node host (`HOST=0.0.0.0`).
 
 The keys stay on the server: the browser only talks to `/api/plan`, and the call log on the page has no key in it. To protect the shared quota (50,000 Qloo calls a month on a hackathon key) the server caches Qloo responses and finished plans for 6 hours (cached plans are labelled), allows 6 new plans per connection per 10 minutes and 200 a day per server instance (`PLANS_PER_DAY`). These limits are in memory, so per instance.
 

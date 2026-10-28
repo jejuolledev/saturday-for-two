@@ -14,12 +14,13 @@ http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   if (url.pathname === '/api/plan') {
     if (req.method !== 'POST') { res.writeHead(405); return res.end('POST only'); }
+    const ip = req.socket.remoteAddress;
     let raw = '';
-    for await (const c of req) { raw += c; if (raw.length > 10000) break; }
+    for await (const c of req) { raw += c; if (raw.length > 10000) { res.writeHead(413); return res.end('Request too large'); } }
     let body = {};
     try { body = JSON.parse(raw); } catch {}
     res.writeHead(200, { 'content-type': 'application/x-ndjson; charset=utf-8', 'cache-control': 'no-store' });
-    return handlePlan({ body, ip: req.socket.remoteAddress, write: (o) => res.write(JSON.stringify(o) + '\n'), end: () => res.end() });
+    return handlePlan({ body, ip, write: (o) => res.write(JSON.stringify(o) + '\n'), end: () => res.end() });
   }
   const path = normalize(url.pathname === '/' ? '/index.html' : url.pathname).replace(/^(\.\.[/\\])+/, '');
   try {

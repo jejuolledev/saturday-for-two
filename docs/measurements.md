@@ -106,7 +106,7 @@ Model: nvidia/nemotron-3.5-lightning-30b-a3b via Meterless Nightshift (this Mac)
 
 Films, artists, shows: the LLM alone named 24; 24 were found in Qloo; **0 were in both people's lists**; median worse rank of those found: outside top 200. The agent had a shared pick in 17 of 24 of the same parts of the day and said "take turns" in the rest.
 Of the 24 films, artists and shows the LLM named alone, 10 simply repeated one person's own typed favourite.
-Lunch: the LLM alone named 7 restaurants; 7 found in Qloo in that city; 0 in both people's lists. The agent's lunch was shared in 8 of 8.
+Lunch: the LLM alone named 7 restaurants (one, "Tsuta" in Tokyo, was matched by Qloo search to a bookstore of a similar name; counted as found below); 7 found in Qloo in that city; 0 in both people's lists. The agent's lunch was shared in 8 of 8.
 
 ## 5. Model planner
 

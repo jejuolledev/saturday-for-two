@@ -52,7 +52,7 @@ First buyer: family day-out and travel apps, which already sell "what shall we d
 
 8 fixed pairs (e.g. Lim Young-woong × Minecraft + Pokémon in Seoul, Metallica + The Godfather × Olivia Rodrigo + Stranger Things in New York) × 5 parts of the day, live API.
 
-- The same language model without Qloo: asked for a film, an artist and a show both would enjoy, it named 24 real titles (all exist in Qloo), but 0 of 24 sat in both people's own lists, and 10 of the 24 simply repeated one person's own favourite. Its lunch restaurants: 0 of 7.
+- The same language model without Qloo: asked for a film, an artist and a show both would enjoy, it named 24 real titles (all exist in Qloo), but 0 of 24 sat in both people's own lists, and 10 of the 24 simply repeated one person's own favourite. None of its lunch restaurants was in both lists either.
 - One mixed Qloo call picked a film, artist or show outside one person's top 200 in 10 of 24 cases. The agent found a pick in both lists in 17 of 24 and said "take turns" in the other 7. When something was shared, the median worse rank was #62 for the agent vs #94 for the mixed call. For places the mixed call is often fine (#8.5 vs #15); we say so.
 - Trot: none of Grandma's own top 10 artists carry Qloo's Trot tag; after the re-plan, 2 of 2 of her song picks do.
 - Lunch with a child, 8 pairs in 7 cities: picks carrying a Qloo alcohol tag went from 6 of 8 to 0 of 8, and all 8 still sit in both people's lists.
@@ -105,7 +105,7 @@ VIDEO_URL
 ## Testing instructions (if asked)
 
 ```
-Open the live demo and press "Grandma & grandkid · Seoul", or type any two people. No login. The page says which planner made the plan (the language model, or the rule-based fallback). A new plan takes about 15 to 35 s with the rules and 45 to 150 s (median 110 s) with the model (about 65 Qloo calls, paced under the 10-per-second limit); repeated requests come from a 6-hour server cache and are labelled. Locally: Node.js 20+, copy .env.example to .env.local with a Qloo hackathon key (and optionally LLM_BASE_URL / LLM_API_KEY / LLM_MODEL), run "npm run dev", open http://127.0.0.1:5173. "npm test" runs 17 offline tests including the agent loop with a scripted model; "npm run measure" re-runs the measurements.
+Open the live demo and press "Grandma & grandkid · Seoul", or type any two people. No login. The page says which planner made the plan (the language model, or the rule-based fallback). A new plan takes about 30 to 50 s with the rules (about 65 Qloo calls) and 45 to 150 s with the model (median 110 s, about 80 to 110 Qloo calls), paced under Qloo's 10-per-second limit; repeated requests come from a 6-hour server cache and are labelled. Locally: Node.js 20.6+, copy .env.example to .env.local with a Qloo hackathon key (and optionally LLM_BASE_URL / LLM_API_KEY / LLM_MODEL), run "npm run dev", open http://127.0.0.1:5173. "npm test" runs 17 offline tests including the agent loop with a scripted model; "npm run measure" re-runs the measurements.
 ```
 
 ## What is Qloo-powered (if asked)
