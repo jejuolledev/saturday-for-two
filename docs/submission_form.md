@@ -29,7 +29,7 @@ A grandmother who loves the trot singer Lim Young-woong and a grandkid who loves
 
 You type what two people love (up to 3 artists, films, shows, games or brands each), optional age bands, a city, and who is coming along. The agent plans one Saturday: a morning outing and a lunch spot in that city (open on Saturdays), a film, songs for the car, and one episode before bed.
 
-Every pick shows where it sits in EACH person's own Qloo list ("Grandma: #45 · Me: #15" for Coco), a one-line reason that was checked against Qloo's data, what the obvious approach (one Qloo call with everyone's favourites mixed) would have picked, and what the same language model said when asked alone, without Qloo, placed in both lists. When nothing is in both lists, the plan says so and they take turns. A box at the top lists everything the agent re-asked and why.
+Every pick shows where it sits in EACH person's own Qloo list ("Grandma: #45 · Me: #15" for Coco), a one-line reason that was checked against Qloo's data, what the obvious approach (one Qloo call with everyone's favourites mixed) would have picked, and, when a language model is configured on the server, what that model said when asked alone, without Qloo, placed in both lists. When nothing is in both lists, the plan says so and they take turns. A box at the top lists everything the agent re-asked and why.
 
 When an answer looks wrong, the agent re-plans. Grandma's favourite is tagged Trot in Qloo, but none of her own top 10 artists are (they are K-pop idols). The agent notices, re-asks Qloo within the Trot genre, and her songs become artists Qloo tags Trot. With a child coming, lunch is a restaurant Qloo tags "good for kids" with no alcohol tags, and the kid's songs come from artists Qloo tags family-friendly.
 

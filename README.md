@@ -21,7 +21,7 @@ Live Qloo hackathon API, 8 fixed pairs × 5 parts of the day ([docs/measurements
 | **The same language model without Qloo**, asked for a film, an artist and a show both people would enjoy (each name then looked up in Qloo) | it named 24 real titles (all found in Qloo), but only **1 of 24** sat in both people's own lists, and **12 of 24** simply repeated one person's own favourite back; its lunch restaurants: 2 of 8 in both lists (the agent's lunch: 8 of 8) |
 | **One mixed Qloo call** (both people's favourites and age bands together, top result), films / artists / shows | outside one person's top 200 in **10 of 24** |
 | The agent, films / artists / shows | a pick in both lists in **17 of 24**; in the other 7 it says "take turns" instead of pretending |
-| The agent vs the mixed call when something is shared (median of the worse of the two ranks) | **#62 vs #94** (places: #7 vs #13; for places the mixed call is often fine, and we say so) |
+| The agent vs the mixed call when something is shared (median of the worse of the two ranks; a pick outside a list counts as just past its end) | **#62 vs #94** (places: #7 vs #13; for places the mixed call is often fine, and we say so) |
 | **Grandma's trot.** Her favourite (Lim Young-woong) is tagged *Trot* in Qloo, but 0 of her own top 10 artists are | the agent re-asks Qloo within the Trot genre; her song picks become artists Qloo tags Trot (**2 of 2**) |
 | **Lunch with a child.** Old filter (bars excluded) vs new (Qloo tag "good for kids", every alcohol tag excluded), 8 pairs in 7 cities | picks carrying an alcohol tag: **6 of 8 → 0 of 8**; all 8 new picks carry the "good for kids" tag and are still in both people's lists |
 
