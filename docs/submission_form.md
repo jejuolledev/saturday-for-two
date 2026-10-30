@@ -99,7 +99,7 @@ https://github.com/jejuolledev/saturday-for-two
 ## Video demo link (optional for this hackathon)
 
 ```
-VIDEO_URL
+https://youtu.be/tl3fFrvMs94
 ```
 
 ## Testing instructions (if asked)
